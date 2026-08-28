@@ -649,6 +649,16 @@
     });
   }
 
+  // Switch teacher/student view live, without a reload (reload + localStorage
+  // are both unreliable inside the sandboxed Artifact frame).
+  function applyMode(m) {
+    MODE = m;
+    document.body.dataset.mode = m;
+    if (m === "builder" && selected.size === 0 && embeddedSet) selected = new Set(embeddedSet);
+    buildPalette();
+    refreshModeNote();
+  }
+
   function enterSharedMode(ns) {
     if (!ns) return;               // not in a capable Artifact view -> keep link mode
     SHARED = true;
@@ -660,13 +670,20 @@
       btn.replaceWith(btn.cloneNode(true));           // drop the openShare listener
       document.getElementById("shareBtn").addEventListener("click", pushToClass);
     }
-    // teacher <-> student toggle in the corner
-    var toggle = el("button", "teacher-toggle",
-      MODE === "builder" ? "Viewing as teacher — switch to student" : "Set up the lesson (teacher)");
+    var toggle = el("button", "teacher-toggle");
+    function refreshToggle() {
+      toggle.textContent = MODE === "builder"
+        ? "◂ Done — show the student view"
+        : "Set up the lesson (teacher) ▸";
+    }
     toggle.addEventListener("click", function () {
-      LS.set("fcw_teacher", MODE !== "builder");
-      location.reload();
+      var next = MODE === "builder" ? "board" : "builder";
+      try { LS.set("fcw_teacher", next === "builder"); } catch (e) {}
+      applyMode(next);
+      refreshToggle();
+      if (next === "builder") toast("Teacher setup — pick cards, then Push to class", 2600);
     });
+    refreshToggle();
     document.body.appendChild(toggle);
   }
 
