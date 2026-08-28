@@ -23,19 +23,20 @@ body {
   color: var(--ink);
   background: var(--bg);
   overflow: hidden;
+  display: flex; flex-direction: column;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
 
 /* ---------- toolbar ---------- */
 header.toolbar {
-  height: var(--toolbar-h);
-  display: flex; align-items: center; gap: 6px;
-  padding: 0 10px;
+  min-height: var(--toolbar-h);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+  padding: 7px 10px;
   background: var(--panel);
   border-bottom: 1px solid var(--line);
   position: relative; z-index: 30;
-  overflow-x: auto;
+  flex: 0 0 auto;
 }
 .toolbar .brand {
   font-weight: 700; font-size: 15px; white-space: nowrap;
@@ -73,7 +74,7 @@ input[type=range].size { width: 96px; }
 
 /* ---------- layout ---------- */
 main {
-  display: flex; height: calc(100% - var(--toolbar-h));
+  display: flex; flex: 1 1 auto; min-height: 0;
 }
 
 aside.palette {
@@ -109,7 +110,8 @@ details.cat > summary::-webkit-details-marker { display: none; }
 
 /* selection (builder mode) */
 body[data-mode="builder"] .pcard.selectable { cursor: pointer; }
-body[data-mode="builder"] .pcard.selectable:not(.on) { opacity: .34; }
+body[data-mode="builder"] .pcard.selectable:not(.on) { opacity: .5; }
+body[data-mode="builder"] .pcard.selectable:not(.on):hover { opacity: .8; }
 body[data-mode="builder"] .pcard.on::after {
   content: "✓"; position: absolute; top: 2px; right: 4px;
   font-size: 13px; font-weight: 800; color: #fff;
@@ -179,8 +181,8 @@ body[data-tool="eraser"] section.board { cursor: cell; }
 }
 .flag-wrap.raised .flag { top: 4px; opacity: 1; filter: none; }
 .flag-label {
-  position: absolute; bottom: -2px; right: 0; font-size: 10px; font-weight: 800;
-  color: var(--muted); text-align: right; width: 100%;
+  position: absolute; bottom: 4px; right: 0; font-size: 10px; font-weight: 800;
+  color: var(--muted); text-align: right; width: 100%; letter-spacing: .05em;
 }
 
 /* English-only banner */
@@ -223,16 +225,18 @@ body.english-only section.board { box-shadow: inset 0 0 0 4px #C8102E; }
 .empty-hint { color: var(--muted); font-size: 12px; }
 
 /* ---------- responsive ---------- */
-@media (max-width: 820px) {
-  :root { --pal-w: 168px; --toolbar-h: 52px; }
+@media (max-width: 1180px) {
   .toolbar .brand { display: none; }
-  .cat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  :root { --pal-w: 172px; }
   .flag-wrap { width: 74px; height: 108px; }
   .flag { width: 60px; height: 37px; }
 }
-@media (max-width: 560px) {
+@media (max-width: 640px) {
   .toolbar button span.txt { display: none; }
   .pen-opts input[type=range].size { width: 64px; }
+  .toolbar .spacer { flex-basis: 100%; height: 0; }
 }
 
 /* big screens / LIM: larger hit targets */
@@ -290,7 +294,6 @@ body.english-only section.board { box-shadow: inset 0 0 0 4px #C8102E; }
           </g>
         </svg>
       </div>
-      <div class="flag-label">tap</div>
     </div>
   </section>
 </main>
@@ -700,7 +703,8 @@ body.english-only section.board { box-shadow: inset 0 0 0 4px #C8102E; }
     if (MODE !== "builder") return;
     LS.set("fcw_lastsel", Array.from(selected));
     var payload = encodeSelection(selected);
-    history.replaceState(null, "", "#s=" + payload);
+    try { history.replaceState(null, "", "#s=" + payload); }
+    catch (e) { try { location.hash = "s=" + payload; } catch (e2) {} }
   }
 
   /* ---------- element helpers ---------- */

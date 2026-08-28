@@ -61,7 +61,8 @@
     if (MODE !== "builder") return;
     LS.set("fcw_lastsel", Array.from(selected));
     var payload = encodeSelection(selected);
-    history.replaceState(null, "", "#s=" + payload);
+    try { history.replaceState(null, "", "#s=" + payload); }
+    catch (e) { try { location.hash = "s=" + payload; } catch (e2) {} }
   }
 
   /* ---------- element helpers ---------- */
