@@ -1,0 +1,79 @@
+<title>Sentence Cards</title>
+<style>/*__STYLES__*/</style>
+
+<header class="toolbar">
+  <span class="brand">Sentence&nbsp;Cards</span>
+  <button class="tool" data-tool="move"><span class="ico">✋</span><span class="txt">Move</span></button>
+  <button class="tool" data-tool="pen"><span class="ico">✏️</span><span class="txt">Pen</span></button>
+  <button class="tool" data-tool="highlighter"><span class="ico">🖍️</span><span class="txt">Marker</span></button>
+  <button class="tool" data-tool="eraser"><span class="ico">🧽</span><span class="txt">Eraser</span></button>
+  <span class="pen-opts">
+    <button class="swatch" data-color="#e02f2f" style="background:#e02f2f" title="Red"></button>
+    <button class="swatch" data-color="#1e6fd9" style="background:#1e6fd9" title="Blue"></button>
+    <button class="swatch" data-color="#1c9e46" style="background:#1c9e46" title="Green"></button>
+    <button class="swatch" data-color="#f2b705" style="background:#f2b705" title="Yellow"></button>
+    <button class="swatch" data-color="#1b2733" style="background:#1b2733" title="Black"></button>
+    <input id="penSize" class="size" type="range" min="2" max="16" value="4" title="Line width">
+  </span>
+  <button id="undoBtn" title="Undo (Ctrl+Z)">↶ <span class="txt">Undo</span></button>
+  <button id="clearInkBtn"><span class="txt">Clear ink</span></button>
+  <button id="clearBoardBtn"><span class="txt">Clear board</span></button>
+  <span class="spacer"></span>
+  <span id="modeNote" class="mode-note"></span>
+  <button id="shareBtn">📤 <span class="txt">Share to class</span></button>
+</header>
+
+<main>
+  <aside class="palette">
+    <div class="palette-head">Cards <span id="paletteHeadCount"></span></div>
+    <div id="paletteScroll" class="palette-scroll"></div>
+  </aside>
+
+  <section id="board" class="board">
+    <div class="english-banner">English only</div>
+    <div id="cardsLayer" class="cards-layer"></div>
+    <canvas id="ink" class="ink"></canvas>
+    <div id="flagWrap" class="flag-wrap" title="Raise / lower the flag">
+      <div class="flag-pole"></div>
+      <div class="flag" id="flagImg">
+        <svg viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <clipPath id="uj-s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+          <clipPath id="uj-t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+          <g clip-path="url(#uj-s)">
+            <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+            <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uj-t)" stroke="#C8102E" stroke-width="4"/>
+            <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+            <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+          </g>
+        </svg>
+      </div>
+      <div class="flag-label">tap</div>
+    </div>
+  </section>
+</main>
+
+<div id="overlay" class="overlay">
+  <div class="dialog">
+    <h2>Share this lesson set</h2>
+    <p class="hint">Tablets: scan the QR. Laptops: copy the link into your class channel. Everyone opens the same cards.</p>
+    <div id="qrBox" class="qr-box"></div>
+    <div class="url-row">
+      <input id="shareUrl" readonly>
+      <button id="copyBtn">Copy link</button>
+    </div>
+    <div class="row">
+      <button id="openBoardBtn">Open board view</button>
+      <button id="saveSetBtn">Save set…</button>
+      <button id="closeShare" class="primary">Done</button>
+    </div>
+    <div class="saved-list">
+      <h3>Saved sets (this computer)</h3>
+      <ul id="savedList"></ul>
+    </div>
+  </div>
+</div>
+
+<script>/*__DATA__*/</script>
+<script>/*__QR__*/</script>
+<script>/*__APP__*/</script>

@@ -1,0 +1,594 @@
+[
+  {
+    "id": "proper-nouns-01",
+    "cat": "proper-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "proper-nouns-02",
+    "cat": "proper-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "proper-nouns-03",
+    "cat": "proper-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "proper-nouns-04",
+    "cat": "proper-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "proper-nouns-05",
+    "cat": "proper-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-01",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-02",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-03",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-04",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-05",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-06",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-07",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-08",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-09",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-10",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-11",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-12",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-13",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-14",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-15",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-16",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-17",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-18",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-19",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-20",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-21",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-22",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-23",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-24",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-25",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-26",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-27",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-28",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-29",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-30",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-31",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-32",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-33",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-34",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-35",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-36",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-37",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-38",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-39",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-40",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-41",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-42",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-43",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-44",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-45",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-46",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-47",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-48",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-49",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-50",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "common-nouns-51",
+    "cat": "common-nouns",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-01",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-02",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-03",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-04",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-05",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-06",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-07",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-08",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-09",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-10",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-11",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-12",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-13",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-14",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-15",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-16",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-17",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-18",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-19",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-20",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-21",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-22",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "verbs-23",
+    "cat": "verbs",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-01",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-02",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-03",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-04",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-05",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-06",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-07",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-08",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-09",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-10",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-11",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-12",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-13",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-14",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-15",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-16",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-17",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "adjectives-18",
+    "cat": "adjectives",
+    "type": "pic"
+  },
+  {
+    "id": "numbers-01",
+    "cat": "numbers",
+    "type": "pic"
+  },
+  {
+    "id": "numbers-02",
+    "cat": "numbers",
+    "type": "pic"
+  },
+  {
+    "id": "numbers-03",
+    "cat": "numbers",
+    "type": "pic"
+  },
+  {
+    "id": "numbers-04",
+    "cat": "numbers",
+    "type": "pic"
+  },
+  {
+    "id": "numbers-05",
+    "cat": "numbers",
+    "type": "pic"
+  },
+  {
+    "id": "numbers-06",
+    "cat": "numbers",
+    "type": "pic"
+  },
+  {
+    "id": "numbers-07",
+    "cat": "numbers",
+    "type": "pic"
+  },
+  {
+    "id": "numbers-08",
+    "cat": "numbers",
+    "type": "pic"
+  },
+  {
+    "id": "numbers-09",
+    "cat": "numbers",
+    "type": "pic"
+  },
+  {
+    "id": "numbers-10",
+    "cat": "numbers",
+    "type": "pic"
+  },
+  {
+    "id": "time-01",
+    "cat": "time",
+    "type": "pic"
+  },
+  {
+    "id": "time-02",
+    "cat": "time",
+    "type": "pic"
+  },
+  {
+    "id": "time-03",
+    "cat": "time",
+    "type": "pic"
+  },
+  {
+    "id": "dot-red",
+    "cat": "markers",
+    "type": "marker",
+    "kind": "dot",
+    "color": "#ff2a06"
+  },
+  {
+    "id": "dot-orange",
+    "cat": "markers",
+    "type": "marker",
+    "kind": "dot",
+    "color": "#ff9606",
+    "ring": "#d40000"
+  },
+  {
+    "id": "dot-green",
+    "cat": "markers",
+    "type": "marker",
+    "kind": "dot",
+    "color": "#368a06"
+  },
+  {
+    "id": "dot-blue",
+    "cat": "markers",
+    "type": "marker",
+    "kind": "dot",
+    "color": "#06a2ff"
+  },
+  {
+    "id": "marker-s",
+    "cat": "markers",
+    "type": "marker",
+    "kind": "s"
+  },
+  {
+    "id": "marker-plus",
+    "cat": "markers",
+    "type": "marker",
+    "kind": "plus",
+    "color": "#06a2ff"
+  }
+]
