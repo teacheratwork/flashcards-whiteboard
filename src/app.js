@@ -5,6 +5,12 @@
 */
 (function () {
   "use strict";
+  // Pristine copy of the served document, captured before any DOM mutation.
+  // Used to republish a new version (with an updated lesson set) via the
+  // "artifact" runtime capability. fetch() of the live URL is preferred; this
+  // is the fallback.
+  var PRISTINE_SNAPSHOT = "<!doctype html>\n" + document.documentElement.outerHTML;
+
   var CATALOG = window.CATALOG || [];
   var CATS = window.CATS || [];
   var IDS = CATALOG.map(function (c) { return c.id; });
@@ -52,10 +58,32 @@
     return m ? decodeURIComponent(m[1]) : null;
   }
 
+  // Lesson set embedded in the page by the "artifact" shared-state capability.
+  var embeddedSet = null;
+  try {
+    var stateEl = document.getElementById("lesson-state");
+    if (stateEl) {
+      var st = JSON.parse(stateEl.textContent || "{}");
+      if (st && st.set && st.set.length) embeddedSet = st.set;
+    }
+  } catch (e) {}
+
+  var isTeacher = !!LS.get("fcw_teacher", false);
   var hashPayload = currentHashPayload();
-  var MODE = hashPayload ? "board" : "builder";
-  var selected = hashPayload ? decodeSelection(hashPayload) : new Set(LS.get("fcw_lastsel", []));
+
+  var MODE, selected;
+  if (hashPayload) {                       // opened via a shared link (hash)
+    MODE = "board";
+    selected = decodeSelection(hashPayload);
+  } else if (embeddedSet && !isTeacher) {  // a lesson has been pushed to the class
+    MODE = "board";
+    selected = new Set(embeddedSet);
+  } else {                                  // teacher setting up
+    MODE = "builder";
+    selected = new Set(embeddedSet || LS.get("fcw_lastsel", []));
+  }
   document.body.dataset.mode = MODE;
+  var SHARED = false;   // set true once the "artifact" capability resolves
 
   function syncHashFromSelection() {
     if (MODE !== "builder") return;
@@ -565,9 +593,81 @@
   });
 
   /* ---------- board-mode banner ---------- */
-  if (MODE === "board") {
-    var note = document.getElementById("modeNote");
-    if (note) note.textContent = "Lesson set from teacher · " + selected.size + " cards";
+  var modeNote = document.getElementById("modeNote");
+  function refreshModeNote() {
+    if (!modeNote) return;
+    if (MODE === "board") modeNote.textContent = "Following the teacher · " + selected.size + " cards";
+    else modeNote.textContent = "";
+  }
+  refreshModeNote();
+
+  /* ---------- shared-state mode (published Artifact) ---------- */
+  var toastEl = null;
+  function toast(msg, ms) {
+    if (!toastEl) {
+      toastEl = el("div", "toast");
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () { toastEl.classList.remove("show"); }, ms || 2200);
+  }
+
+  function getPristineDoc() {
+    return fetch(location.href, { cache: "reload" })
+      .then(function (r) { if (!r.ok) throw 0; return r.text(); })
+      .then(function (src) {
+        return /id="lesson-state"/.test(src) ? src : PRISTINE_SNAPSHOT;
+      })
+      .catch(function () { return PRISTINE_SNAPSHOT; });
+  }
+
+  var artifactNS = null;
+  function pushToClass() {
+    if (!artifactNS) return;
+    if (selected.size === 0) { toast("Pick some cards first."); return; }
+    var ids = Array.from(selected);
+    var btn = document.getElementById("shareBtn");
+    var label = btn ? btn.textContent : "";
+    if (btn) { btn.disabled = true; btn.textContent = "Pushing…"; }
+    getPristineDoc().then(function (src) {
+      if (!/id="lesson-state"/.test(src)) throw new Error("no-marker");
+      var doc = src.replace(
+        /(<script id="lesson-state"[^>]*>)[\s\S]*?(<\/script>)/,
+        function (m, a, b) { return a + JSON.stringify({ set: ids }) + b; });
+      return artifactNS.publish(doc);
+    }).then(function () {
+      toast("Pushed to the class ✓ (" + ids.length + " cards)");
+    }).catch(function (err) {
+      var s = (err && (err.code || err.message || "")) + "";
+      if (/writer|granted|permission/i.test(s)) toast("Only your own copy of this board can push to the class.");
+      else if (/conflict/i.test(s)) toast("Someone else just pushed — this view will reload.");
+      else toast("Couldn't push. Try again.");
+    }).then(function () {
+      if (btn) { btn.disabled = false; btn.textContent = label; }
+    });
+  }
+
+  function enterSharedMode(ns) {
+    if (!ns) return;               // not in a capable Artifact view -> keep link mode
+    SHARED = true;
+    artifactNS = ns;
+    document.body.classList.add("shared");
+    var btn = document.getElementById("shareBtn");
+    if (btn) {
+      btn.textContent = "📤 Push to class";
+      btn.replaceWith(btn.cloneNode(true));           // drop the openShare listener
+      document.getElementById("shareBtn").addEventListener("click", pushToClass);
+    }
+    // teacher <-> student toggle in the corner
+    var toggle = el("button", "teacher-toggle",
+      MODE === "builder" ? "Viewing as teacher — switch to student" : "Set up the lesson (teacher)");
+    toggle.addEventListener("click", function () {
+      LS.set("fcw_teacher", MODE !== "builder");
+      location.reload();
+    });
+    document.body.appendChild(toggle);
   }
 
   /* ---------- init ---------- */
@@ -580,4 +680,8 @@
     clearTimeout(window._rz); window._rz = setTimeout(resizeInk, 120);
   });
   if (MODE === "builder") syncHashFromSelection();
+
+  if (window.claude && typeof window.claude.use === "function") {
+    try { window.claude.use("artifact").then(enterSharedMode, function () {}); } catch (e) {}
+  }
 })();
