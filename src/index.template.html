@@ -56,6 +56,7 @@
   <div class="dialog">
     <h2>Share this lesson set</h2>
     <p class="hint">Tablets: scan the QR. Laptops: copy the link into your class channel. Everyone opens the same cards.</p>
+    <p id="shareWarn" class="warn">Pick at least one card first — the palette on the left.</p>
     <div id="qrBox" class="qr-box"></div>
     <div class="url-row">
       <input id="shareUrl" readonly>
@@ -63,11 +64,14 @@
     </div>
     <div class="row">
       <button id="openBoardBtn">Open board view</button>
-      <button id="saveSetBtn">Save set…</button>
       <button id="closeShare" class="primary">Done</button>
     </div>
     <div class="saved-list">
       <h3>Saved sets (this computer)</h3>
+      <div class="save-row">
+        <input id="setName" placeholder="Lesson name" maxlength="40">
+        <button id="saveSetBtn">Save</button>
+      </div>
       <ul id="savedList"></ul>
     </div>
   </div>

@@ -215,6 +215,16 @@ body.english-only section.board { box-shadow: inset 0 0 0 4px #C8102E; }
 }
 .dialog h2 { margin: 0 0 4px; font-size: 18px; }
 .dialog p.hint { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
+.dialog p.warn {
+  display: none; margin: 0 0 12px; padding: 8px 10px; font-size: 13px; font-weight: 600;
+  color: #8a4b00; background: #fdf0dc; border: 1px solid #f0cd94; border-radius: 8px;
+}
+.save-row { display: flex; gap: 6px; margin-bottom: 8px; }
+.save-row input {
+  flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 8px;
+  padding: 7px 9px; font-size: 13px;
+}
+.save-row button { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 7px 12px; font-weight: 700; cursor: pointer; }
 .qr-box { width: 232px; height: 232px; margin: 0 auto 12px; background: #fff; border: 1px solid var(--line); border-radius: 8px; }
 .url-row { display: flex; gap: 6px; margin-bottom: 10px; }
 .url-row input {
@@ -309,6 +319,7 @@ body.english-only section.board { box-shadow: inset 0 0 0 4px #C8102E; }
   <div class="dialog">
     <h2>Share this lesson set</h2>
     <p class="hint">Tablets: scan the QR. Laptops: copy the link into your class channel. Everyone opens the same cards.</p>
+    <p id="shareWarn" class="warn">Pick at least one card first — the palette on the left.</p>
     <div id="qrBox" class="qr-box"></div>
     <div class="url-row">
       <input id="shareUrl" readonly>
@@ -316,11 +327,14 @@ body.english-only section.board { box-shadow: inset 0 0 0 4px #C8102E; }
     </div>
     <div class="row">
       <button id="openBoardBtn">Open board view</button>
-      <button id="saveSetBtn">Save set…</button>
       <button id="closeShare" class="primary">Done</button>
     </div>
     <div class="saved-list">
       <h3>Saved sets (this computer)</h3>
+      <div class="save-row">
+        <input id="setName" placeholder="Lesson name" maxlength="40">
+        <button id="saveSetBtn">Save</button>
+      </div>
       <ul id="savedList"></ul>
     </div>
   </div>
@@ -1101,9 +1115,16 @@ body.english-only section.board { box-shadow: inset 0 0 0 4px #C8102E; }
     pushHistory(function () { strokes = old; redrawInk(); });
   });
   document.getElementById("clearBoardBtn").addEventListener("click", function () {
-    if (!confirm("Clear everything on the board?")) return;
+    var oldStrokes = strokes;
+    var oldCards = Array.prototype.slice.call(cardsLayer.children);
+    if (!oldStrokes.length && !oldCards.length) return;
     strokes = []; redrawInk();
-    cardsLayer.innerHTML = ""; selectedInst = null; undoStack = [];
+    oldCards.forEach(function (n) { n.remove(); });
+    selectedInst = null;
+    pushHistory(function () {
+      strokes = oldStrokes; redrawInk();
+      oldCards.forEach(function (n) { cardsLayer.appendChild(n); });
+    });
   });
 
   document.addEventListener("keydown", function (e) {
@@ -1139,13 +1160,17 @@ body.english-only section.board { box-shadow: inset 0 0 0 4px #C8102E; }
   function shareUrl() {
     return location.origin + location.pathname + "#s=" + encodeSelection(selected);
   }
+  var shareWarn = document.getElementById("shareWarn");
   function openShare() {
-    if (selected.size === 0) { alert("Select at least one card for the lesson set first."); return; }
+    var empty = selected.size === 0;
+    if (shareWarn) shareWarn.style.display = empty ? "block" : "none";
+    qrBox.style.display = empty ? "none" : "";
     var url = shareUrl();
     urlInput.value = url;
-    try {
-      qrBox.innerHTML = window.QR.svg(url, { ecc: "M", border: 2 });
-    } catch (e) { qrBox.textContent = "QR error"; }
+    if (!empty) {
+      try { qrBox.innerHTML = window.QR.svg(url, { ecc: "M", border: 2 }); }
+      catch (e) { qrBox.textContent = "QR error"; }
+    }
     renderSaved();
     overlay.classList.add("open");
   }
@@ -1190,12 +1215,15 @@ body.english-only section.board { box-shadow: inset 0 0 0 4px #C8102E; }
   document.getElementById("openBoardBtn").addEventListener("click", function () {
     window.open(shareUrl(), "_blank");
   });
+  var setNameInput = document.getElementById("setName");
   document.getElementById("saveSetBtn").addEventListener("click", function () {
-    var name = prompt("Name this lesson set:");
-    if (!name) return;
+    if (selected.size === 0) { if (shareWarn) shareWarn.style.display = "block"; return; }
+    var name = (setNameInput && setNameInput.value || "").trim();
+    if (!name) { if (setNameInput) setNameInput.focus(); return; }
     var sets = LS.get("fcw_sets", []);
     sets.unshift({ name: name, payload: encodeSelection(selected), count: selected.size, ts: Date.now() });
     LS.set("fcw_sets", sets.slice(0, 30));
+    if (setNameInput) setNameInput.value = "";
     renderSaved();
   });
 

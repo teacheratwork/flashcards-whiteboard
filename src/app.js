@@ -452,9 +452,16 @@
     pushHistory(function () { strokes = old; redrawInk(); });
   });
   document.getElementById("clearBoardBtn").addEventListener("click", function () {
-    if (!confirm("Clear everything on the board?")) return;
+    var oldStrokes = strokes;
+    var oldCards = Array.prototype.slice.call(cardsLayer.children);
+    if (!oldStrokes.length && !oldCards.length) return;
     strokes = []; redrawInk();
-    cardsLayer.innerHTML = ""; selectedInst = null; undoStack = [];
+    oldCards.forEach(function (n) { n.remove(); });
+    selectedInst = null;
+    pushHistory(function () {
+      strokes = oldStrokes; redrawInk();
+      oldCards.forEach(function (n) { cardsLayer.appendChild(n); });
+    });
   });
 
   document.addEventListener("keydown", function (e) {
@@ -490,13 +497,17 @@
   function shareUrl() {
     return location.origin + location.pathname + "#s=" + encodeSelection(selected);
   }
+  var shareWarn = document.getElementById("shareWarn");
   function openShare() {
-    if (selected.size === 0) { alert("Select at least one card for the lesson set first."); return; }
+    var empty = selected.size === 0;
+    if (shareWarn) shareWarn.style.display = empty ? "block" : "none";
+    qrBox.style.display = empty ? "none" : "";
     var url = shareUrl();
     urlInput.value = url;
-    try {
-      qrBox.innerHTML = window.QR.svg(url, { ecc: "M", border: 2 });
-    } catch (e) { qrBox.textContent = "QR error"; }
+    if (!empty) {
+      try { qrBox.innerHTML = window.QR.svg(url, { ecc: "M", border: 2 }); }
+      catch (e) { qrBox.textContent = "QR error"; }
+    }
     renderSaved();
     overlay.classList.add("open");
   }
@@ -541,12 +552,15 @@
   document.getElementById("openBoardBtn").addEventListener("click", function () {
     window.open(shareUrl(), "_blank");
   });
+  var setNameInput = document.getElementById("setName");
   document.getElementById("saveSetBtn").addEventListener("click", function () {
-    var name = prompt("Name this lesson set:");
-    if (!name) return;
+    if (selected.size === 0) { if (shareWarn) shareWarn.style.display = "block"; return; }
+    var name = (setNameInput && setNameInput.value || "").trim();
+    if (!name) { if (setNameInput) setNameInput.focus(); return; }
     var sets = LS.get("fcw_sets", []);
     sets.unshift({ name: name, payload: encodeSelection(selected), count: selected.size, ts: Date.now() });
     LS.set("fcw_sets", sets.slice(0, 30));
+    if (setNameInput) setNameInput.value = "";
     renderSaved();
   });
 
