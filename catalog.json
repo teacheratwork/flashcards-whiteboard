@@ -2,559 +2,777 @@
   {
     "id": "proper-nouns-01",
     "cat": "proper-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "Santa",
+    "tag": "animate"
   },
   {
     "id": "proper-nouns-02",
     "cat": "proper-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "Smartie",
+    "tag": "animate"
   },
   {
     "id": "proper-nouns-03",
     "cat": "proper-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "Teacher Melissa",
+    "tag": "animate"
   },
   {
     "id": "proper-nouns-04",
     "cat": "proper-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "Joe",
+    "tag": "animate"
   },
   {
     "id": "proper-nouns-05",
     "cat": "proper-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "Ellie",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-01",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "hat",
+    "tag": "thing"
   },
   {
     "id": "common-nouns-02",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "witch",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-03",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "winter",
+    "tag": "abstract"
   },
   {
     "id": "common-nouns-04",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "teacher",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-05",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "spring",
+    "tag": "abstract"
   },
   {
     "id": "common-nouns-06",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "snowman",
+    "tag": "animate",
+    "pl": "snowmen"
   },
   {
     "id": "common-nouns-07",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "snowball",
+    "tag": "thing"
   },
   {
     "id": "common-nouns-08",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "skunk",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-09",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "skeleton",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-10",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "Christmas tree",
+    "tag": "thing"
   },
   {
     "id": "common-nouns-11",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "school",
+    "tag": "place"
   },
   {
     "id": "common-nouns-12",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "scarf",
+    "tag": "thing",
+    "pl": "scarves"
   },
   {
     "id": "common-nouns-13",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "ruler",
+    "tag": "thing"
   },
   {
     "id": "common-nouns-14",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "rubber",
+    "tag": "thing"
   },
   {
     "id": "common-nouns-15",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "river",
+    "tag": "place"
   },
   {
     "id": "common-nouns-16",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "puppy",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-17",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "pumpkin",
+    "tag": "thing"
   },
   {
     "id": "common-nouns-18",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "present",
+    "tag": "thing"
   },
   {
     "id": "common-nouns-19",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "pig",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-20",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "pen",
+    "tag": "thing"
   },
   {
     "id": "common-nouns-21",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "octopus",
+    "tag": "animate",
+    "pl": "octopuses"
   },
   {
     "id": "common-nouns-22",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "ladybird",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-23",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "hot chocolate",
+    "tag": "thing",
+    "nopl": true
   },
   {
     "id": "common-nouns-24",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "hen",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-25",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "haunted house",
+    "tag": "place"
   },
   {
     "id": "common-nouns-26",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "cap",
+    "tag": "thing"
   },
   {
     "id": "common-nouns-27",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "girl",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-28",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "ghost",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-29",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "garden",
+    "tag": "place"
   },
   {
     "id": "common-nouns-30",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "frog",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-31",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "fairy lights",
+    "tag": "thing",
+    "nopl": true
   },
   {
     "id": "common-nouns-32",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "fox",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-33",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "fish",
+    "tag": "animate",
+    "pl": "fish"
   },
   {
     "id": "common-nouns-34",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "elf",
+    "tag": "animate",
+    "pl": "elves"
   },
   {
     "id": "common-nouns-35",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "egg",
+    "tag": "thing"
   },
   {
     "id": "common-nouns-36",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "Easter bunny",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-37",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "doll",
+    "tag": "thing"
   },
   {
     "id": "common-nouns-38",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "dog",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-39",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "desk",
+    "tag": "thing"
   },
   {
     "id": "common-nouns-40",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "cup",
+    "tag": "thing"
   },
   {
     "id": "common-nouns-41",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "scarecrow",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-42",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "Christmas",
+    "tag": "abstract"
   },
   {
     "id": "common-nouns-43",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "chick",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-44",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "cat",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-45",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "rabbit",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-46",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "boy",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-47",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "book",
+    "tag": "thing"
   },
   {
     "id": "common-nouns-48",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "bird",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-49",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "bat",
+    "tag": "animate"
   },
   {
     "id": "common-nouns-50",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "ball",
+    "tag": "thing"
   },
   {
     "id": "common-nouns-51",
     "cat": "common-nouns",
-    "type": "pic"
+    "type": "pic",
+    "w": "schoolbag",
+    "tag": "thing"
   },
   {
     "id": "verbs-01",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "walk",
+    "tag": "intr"
   },
   {
     "id": "verbs-02",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "think",
+    "tag": "intr"
   },
   {
     "id": "verbs-03",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "take",
+    "tag": "trans"
   },
   {
     "id": "verbs-04",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "swim",
+    "tag": "intr"
   },
   {
     "id": "verbs-05",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "sleep",
+    "tag": "intr"
   },
   {
     "id": "verbs-06",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "look",
+    "tag": "intr"
   },
   {
     "id": "verbs-07",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "talk",
+    "tag": "intr"
   },
   {
     "id": "verbs-08",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "run",
+    "tag": "intr"
   },
   {
     "id": "verbs-09",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "turn",
+    "tag": "intr"
   },
   {
     "id": "verbs-10",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "put on",
+    "tag": "trans"
   },
   {
     "id": "verbs-11",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "point",
+    "tag": "intr"
   },
   {
     "id": "verbs-12",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "play",
+    "tag": "intr"
   },
   {
     "id": "verbs-13",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "open",
+    "tag": "trans"
   },
   {
     "id": "verbs-14",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "stop",
+    "tag": "intr"
   },
   {
     "id": "verbs-15",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "see",
+    "tag": "trans"
   },
   {
     "id": "verbs-16",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "listen",
+    "tag": "intr"
   },
   {
     "id": "verbs-17",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "jump",
+    "tag": "intr"
   },
   {
     "id": "verbs-18",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "dance",
+    "tag": "intr"
   },
   {
     "id": "verbs-19",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "wave",
+    "tag": "intr"
   },
   {
     "id": "verbs-20",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "eat",
+    "tag": "intr"
   },
   {
     "id": "verbs-21",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "close",
+    "tag": "trans"
   },
   {
     "id": "verbs-22",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "carry",
+    "tag": "trans"
   },
   {
     "id": "verbs-23",
     "cat": "verbs",
-    "type": "pic"
+    "type": "pic",
+    "w": "build",
+    "tag": "trans"
   },
   {
     "id": "adjectives-01",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "yellow",
+    "tag": "any"
   },
   {
     "id": "adjectives-02",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "white",
+    "tag": "any"
   },
   {
     "id": "adjectives-03",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "sunny",
+    "tag": "weather"
   },
   {
     "id": "adjectives-04",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "snowy",
+    "tag": "weather"
   },
   {
     "id": "adjectives-05",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "clever",
+    "tag": "any"
   },
   {
     "id": "adjectives-06",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "red",
+    "tag": "any"
   },
   {
     "id": "adjectives-07",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "purple",
+    "tag": "any"
   },
   {
     "id": "adjectives-08",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "pink",
+    "tag": "any"
   },
   {
     "id": "adjectives-09",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "hot",
+    "tag": "any"
   },
   {
     "id": "adjectives-10",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "happy",
+    "tag": "any"
   },
   {
     "id": "adjectives-11",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "grey",
+    "tag": "any"
   },
   {
     "id": "adjectives-12",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "green",
+    "tag": "any"
   },
   {
     "id": "adjectives-13",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "funny",
+    "tag": "any"
   },
   {
     "id": "adjectives-14",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "super",
+    "tag": "any"
   },
   {
     "id": "adjectives-15",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "cold",
+    "tag": "any"
   },
   {
     "id": "adjectives-16",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "brown",
+    "tag": "any"
   },
   {
     "id": "adjectives-17",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "blue",
+    "tag": "any"
   },
   {
     "id": "adjectives-18",
     "cat": "adjectives",
-    "type": "pic"
+    "type": "pic",
+    "w": "black",
+    "tag": "any"
   },
   {
     "id": "numbers-01",
     "cat": "numbers",
-    "type": "pic"
+    "type": "pic",
+    "w": "one"
   },
   {
     "id": "numbers-02",
     "cat": "numbers",
-    "type": "pic"
+    "type": "pic",
+    "w": "two"
   },
   {
     "id": "numbers-03",
     "cat": "numbers",
-    "type": "pic"
+    "type": "pic",
+    "w": "three"
   },
   {
     "id": "numbers-04",
     "cat": "numbers",
-    "type": "pic"
+    "type": "pic",
+    "w": "four"
   },
   {
     "id": "numbers-05",
     "cat": "numbers",
-    "type": "pic"
+    "type": "pic",
+    "w": "five"
   },
   {
     "id": "numbers-06",
     "cat": "numbers",
-    "type": "pic"
+    "type": "pic",
+    "w": "six"
   },
   {
     "id": "numbers-07",
     "cat": "numbers",
-    "type": "pic"
+    "type": "pic",
+    "w": "seven"
   },
   {
     "id": "numbers-08",
     "cat": "numbers",
-    "type": "pic"
+    "type": "pic",
+    "w": "eight"
   },
   {
     "id": "numbers-09",
     "cat": "numbers",
-    "type": "pic"
+    "type": "pic",
+    "w": "nine"
   },
   {
     "id": "numbers-10",
     "cat": "numbers",
-    "type": "pic"
+    "type": "pic",
+    "w": "ten"
   },
   {
     "id": "time-01",
     "cat": "time",
-    "type": "pic"
+    "type": "pic",
+    "w": "every day"
   },
   {
     "id": "time-02",
     "cat": "time",
-    "type": "pic"
+    "type": "pic",
+    "w": "every Easter"
   },
   {
     "id": "time-03",
     "cat": "time",
-    "type": "pic"
+    "type": "pic",
+    "w": "every Christmas"
   },
   {
     "id": "dot-red",
     "cat": "markers",
     "type": "marker",
     "kind": "dot",
-    "color": "#ff2a06"
+    "color": "#ff2a06",
+    "words": [
+      "the",
+      "a"
+    ]
   },
   {
     "id": "dot-orange",
@@ -562,33 +780,60 @@
     "type": "marker",
     "kind": "dot",
     "color": "#ff9606",
-    "ring": "#d40000"
+    "ring": "#d40000",
+    "words": [
+      "my",
+      "your",
+      "his",
+      "her",
+      "our",
+      "their"
+    ]
   },
   {
     "id": "dot-green",
     "cat": "markers",
     "type": "marker",
     "kind": "dot",
-    "color": "#368a06"
+    "color": "#368a06",
+    "words": [
+      "is",
+      "let's",
+      "are"
+    ]
   },
   {
     "id": "dot-blue",
     "cat": "markers",
     "type": "marker",
     "kind": "dot",
-    "color": "#06a2ff"
+    "color": "#06a2ff",
+    "words": [
+      "in",
+      "on",
+      "under",
+      "near",
+      "at",
+      "with"
+    ]
   },
   {
     "id": "marker-s",
     "cat": "markers",
     "type": "marker",
-    "kind": "s"
+    "kind": "s",
+    "words": [
+      "s"
+    ]
   },
   {
     "id": "marker-plus",
     "cat": "markers",
     "type": "marker",
     "kind": "plus",
-    "color": "#06a2ff"
+    "color": "#06a2ff",
+    "words": [
+      "and"
+    ]
   }
 ]

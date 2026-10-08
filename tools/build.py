@@ -1,7 +1,7 @@
 """Assemble the self-contained app.
 
 Reads src/ (template, styles, qr.js, app.js), the sliced cards in assets/cards/,
-and assets/markers.json, then writes:
+assets/markers.json and assets/vocab.json (words + grammar tags), then writes:
 
   dist/artifact.html  -- body-only page for publishing as a Claude Artifact
   dist/index.html     -- same, wrapped as a standalone file you can open locally
@@ -68,6 +68,20 @@ def build_catalog() -> list[dict]:
         if "ring" in m:
             entry["ring"] = m["ring"]
         catalog.append(entry)
+
+    # words + grammar tags (assets/vocab.json) for speech and the sentence generator
+    vocab = json.loads((ROOT / "assets" / "vocab.json").read_text(encoding="utf-8"))
+    missing = []
+    for c in catalog:
+        v = vocab.get(c["id"])
+        if not v:
+            missing.append(c["id"])
+            continue
+        for k in ("w", "tag", "pl", "nopl", "words"):
+            if k in v:
+                c[k] = v[k]
+    if missing:
+        print(f"  WARNING no vocab entry for: {', '.join(missing)}")
     return catalog
 
 

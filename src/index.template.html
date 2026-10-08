@@ -18,6 +18,13 @@
   <button id="undoBtn" title="Undo (Ctrl+Z)">↶ <span class="txt">Undo</span></button>
   <button id="clearInkBtn"><span class="txt">Clear ink</span></button>
   <button id="clearBoardBtn"><span class="txt">Clear board</span></button>
+  <span class="gen-opts">
+    <button id="genBtn" title="New random sentence">🎲 <span class="txt">Sentence</span></button>
+    <label class="level" title="Grammar level of the sentence">Level
+      <input id="genLevel" type="range" min="1" max="6" step="1" value="1"><b id="genLevelVal">1</b></label>
+    <button id="sillyBtn" class="toggle" title="Silly sentences: any noun, any verb" aria-pressed="false">🤪 <span class="txt">Silly</span></button>
+  </span>
+  <button id="readBtn" title="Read the board aloud">🔊 <span class="txt">Read</span></button>
   <span class="spacer"></span>
   <span id="modeNote" class="mode-note"></span>
   <button id="shareBtn">📤 <span class="txt">Share to class</span></button>

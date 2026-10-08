@@ -205,6 +205,7 @@
         if (ghost) ghost.remove();
         if (!dragging) {
           if (MODE === "builder") toggleSelect(def.id, node);
+          else sayCard(def);
           return;
         }
         var b = board.getBoundingClientRect();
@@ -257,11 +258,30 @@
     del.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
     del.addEventListener("click", function (e) { e.stopPropagation(); removeInstance(node); });
     node.appendChild(del);
+    if (def.kind !== "s") {
+      var say = el("div", "say", "🔊");
+      say.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
+      say.addEventListener("click", function (e) { e.stopPropagation(); speech.say(wordOfNode(node)); });
+      node.appendChild(say);
+    }
+    if (def.words && def.words.length > 1) {
+      // dot markers stand for several words: the chip shows the current one, tap cycles
+      node.dataset.word = opts.word || def.words[0];
+      var chip = el("div", "word-chip", node.dataset.word);
+      chip.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
+      chip.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var i = def.words.indexOf(node.dataset.word);
+        node.dataset.word = chip.textContent = def.words[(i + 1) % def.words.length];
+        speech.say(node.dataset.word);
+      });
+      node.appendChild(chip);
+    }
     cardsLayer.appendChild(node);
     attachInstancePointer(node, def);
     if (def.kind === "s") snapS(node);
-    pushHistory(function () { node.remove(); if (selectedInst === node) selectedInst = null; });
-    selectInstance(node);
+    if (!opts.noHistory) pushHistory(function () { node.remove(); if (selectedInst === node) selectedInst = null; });
+    if (!opts.noSelect) selectInstance(node);
     return node;
   }
 
@@ -351,6 +371,265 @@
       selectInstance(null);
     }
   });
+
+  /* ---------- speech (browser speech synthesis, British voice preferred) ---------- */
+  var speech = (function () {
+    var synth = window.speechSynthesis;
+    var voice = null;
+    function pickVoice() {
+      if (!synth) return;
+      var vs = synth.getVoices().filter(function (v) { return /^en/i.test(v.lang); });
+      function gb(v) { return /en[-_]GB/i.test(v.lang); }
+      var nice = /Google UK|Sonia|Libby|Ryan|Hazel|George|Natural/i;
+      voice = vs.filter(function (v) { return gb(v) && nice.test(v.name); })[0]
+        || vs.filter(gb)[0] || vs[0] || null;
+    }
+    if (synth) {
+      pickVoice();
+      if ("onvoiceschanged" in synth) synth.onvoiceschanged = pickVoice;
+    }
+    function say(text) {
+      if (!text) return;
+      if (!synth || typeof SpeechSynthesisUtterance === "undefined") {
+        toast("Speech is not available in this browser.");
+        return;
+      }
+      if (!voice) pickVoice();
+      synth.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = voice ? voice.lang : "en-GB";
+      if (voice) u.voice = voice;
+      u.rate = 0.85;
+      synth.speak(u);
+    }
+    return { say: say };
+  })();
+
+  /* ---------- words: inflection and reading the board ---------- */
+  function inflect(word) {           // add -s / -es / -ies to one word
+    if (/(s|x|z|ch|sh)$/i.test(word) || /^(go|do)$/i.test(word)) return word + "es";
+    if (/[^aeiou]y$/i.test(word)) return word.slice(0, -1) + "ies";
+    if (/^have$/i.test(word)) return "has";
+    return word + "s";
+  }
+  function pluralOf(def) {           // inflect the last word: "Christmas trees"
+    if (def.pl) return def.pl;
+    var p = def.w.split(" "); p[p.length - 1] = inflect(p[p.length - 1]); return p.join(" ");
+  }
+  function thirdPerson(def) {        // inflect the first word: "puts on"
+    var p = def.w.split(" "); p[0] = inflect(p[0]); return p.join(" ");
+  }
+  function markerWord(node, def) { return node.dataset.word || (def.words ? def.words[0] : ""); }
+  function sayCard(def) {
+    if (def.kind === "s") return;
+    speech.say(def.type === "marker" ? (def.words || []).join(", ") : def.w);
+  }
+
+  // Cards on the board in reading order (rows top->bottom, left->right),
+  // with each "s" marker attached to the card it sits on.
+  function boardItems() {
+    var items = [], sNodes = [];
+    Array.prototype.forEach.call(cardsLayer.querySelectorAll(".inst"), function (n) {
+      var d = BYID[n.dataset.id];
+      if (!d) return;
+      if (d.kind === "s") { sNodes.push(n); return; }
+      var r = n.getBoundingClientRect();
+      items.push({ n: n, d: d, r: r, cx: r.left + r.width / 2, cy: r.top + r.height / 2, s: false });
+    });
+    sNodes.forEach(function (sn) {
+      var sr = sn.getBoundingClientRect();
+      var x = sr.left + sr.width / 2, y = sr.top + sr.height / 2;
+      var best = null;
+      items.forEach(function (it) {
+        if (it.d.type !== "pic") return;
+        if (x >= it.r.left && x <= it.r.right && y >= it.r.top && y <= it.r.bottom &&
+            (!best || it.r.width * it.r.height > best.r.width * best.r.height)) best = it;
+      });
+      if (best) best.s = true;
+    });
+    items.sort(function (a, b) { return a.cy - b.cy; });
+    var rows = [];
+    items.forEach(function (it) {
+      var row = rows[rows.length - 1];
+      if (row && Math.abs(it.cy - row.cy) < Math.max(row.h, it.r.height) * 0.6) row.items.push(it);
+      else rows.push({ cy: it.cy, h: it.r.height, items: [it] });
+    });
+    rows.forEach(function (row) { row.items.sort(function (a, b) { return a.cx - b.cx; }); });
+    return rows;
+  }
+  function itemWord(it) {
+    if (it.d.type === "marker") return markerWord(it.n, it.d);
+    if (!it.s) return it.d.w;
+    if (it.d.cat === "verbs") return thirdPerson(it.d);
+    if (/nouns$/.test(it.d.cat)) return pluralOf(it.d);
+    return it.d.w + "s";
+  }
+  function fixArticles(words) {      // "a" -> "an" before a vowel sound
+    return words.map(function (w, i) {
+      return w === "a" && words[i + 1] && /^[aeio]|^u(?!ni)/i.test(words[i + 1]) ? "an" : w;
+    });
+  }
+  function wordOfNode(node) {
+    var found = "";
+    boardItems().forEach(function (row) {
+      row.items.forEach(function (it) { if (it.n === node) found = itemWord(it); });
+    });
+    return found;
+  }
+  function readBoard() {
+    var rows = boardItems();
+    if (!rows.length) { toast("The board is empty."); return; }
+    speech.say(rows.map(function (row) {
+      return fixArticles(row.items.map(itemWord)).join(" ");
+    }).join(". "));
+  }
+
+  /* ---------- sentence generator ---------- */
+  // Levels (each level also uses the structures of the lower ones):
+  //  1  the/a + noun + verb-s           2  + plurals (noun-s), possessives (orange)
+  //  3  + adjective                     4  + green dot: "is" / "let's"
+  //  5  + numbers, "+" (compound subject, verb without s)
+  //  6  + blue preposition + place: "In the garden the black fox + the green frog sleep"
+  var genLevel = LS.get("fcw_level", 1);
+  var silly = !!LS.get("fcw_silly", false);
+
+  function rnd(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function chance(p) { return Math.random() < p; }
+
+  function makePools(restrict) {
+    var src = CATALOG.filter(function (c) {
+      return c.type === "pic" && c.w && (!restrict || selected.has(c.id));
+    });
+    function of(cat, fn) { return src.filter(function (c) { return c.cat === cat && (!fn || fn(c)); }); }
+    var subj = of("common-nouns", function (c) {
+      return silly ? c.tag !== "abstract" : c.tag === "animate";
+    });
+    return {
+      subj: subj,
+      subjPl: subj.filter(function (c) { return !c.nopl; }),
+      proper: of("proper-nouns"),
+      verb: of("verbs", function (c) { return silly || c.tag === "intr"; }),
+      adj: of("adjectives", function (c) { return silly || c.tag !== "weather"; }),
+      place: of("common-nouns", function (c) { return c.tag === "place"; }),
+      one: of("numbers", function (c) { return c.id === "numbers-01"; }),
+      numPl: of("numbers", function (c) { return c.id !== "numbers-01"; })
+    };
+  }
+
+  // A noun phrase. f forces features: {plural, det:'art'|'poss'|'num', adj, proper}.
+  function nounPhrase(P, L, f) {
+    f = f || {};
+    var canProper = P.proper.length && f.plural == null && !f.det && !f.adj;
+    if (canProper && (f.proper || chance(0.2))) return { t: [{ id: rnd(P.proper).id }], plural: false };
+    var plural = f.plural != null ? f.plural : (L >= 2 && P.subjPl.length > 0 && chance(0.4));
+    var noun = rnd(plural ? P.subjPl : P.subj);
+    var det = f.det || (plural && L >= 5 && P.numPl.length && chance(0.3) ? "num"
+      : L >= 2 && chance(0.3) ? "poss" : "art");
+    var t = [];
+    if (det === "num") t.push({ id: rnd(plural ? P.numPl : P.one).id });
+    else if (det === "poss") t.push({ id: "dot-orange", word: rnd(BYID["dot-orange"].words) });
+    else t.push({ id: "dot-red", word: plural ? "the" : rnd(["the", "a"]) });
+    if (P.adj.length && (f.adj || (L >= 3 && chance(0.4)))) t.push({ id: rnd(P.adj).id });
+    t.push({ id: noun.id, s: plural });
+    return { t: t, plural: plural };
+  }
+  function withVerb(np, P) { return np.t.concat([{ id: rnd(P.verb).id, s: !np.plural }]); }
+  function placePhrase(P) {
+    return [{ id: "dot-blue", word: rnd(["in", "near"]) }, { id: "dot-red", word: "the" }, { id: rnd(P.place).id }];
+  }
+
+  var TEMPLATES = [
+    { lvl: 1, ok: function (P) { return P.subj.length && P.verb.length; },
+      make: function (P, L) { return withVerb(nounPhrase(P, L, { plural: L >= 2 ? null : false }), P); } },
+    { lvl: 1, ok: function (P) { return P.proper.length && P.verb.length; },
+      make: function (P) { return withVerb(nounPhrase(P, 1, { proper: true }), P); } },
+    { lvl: 2, ok: function (P) { return P.subjPl.length && P.verb.length; },
+      make: function (P, L) { return withVerb(nounPhrase(P, L, { plural: true, det: "art" }), P); } },
+    { lvl: 2, ok: function (P) { return P.subj.length && P.verb.length; },
+      make: function (P, L) { return withVerb(nounPhrase(P, L, { det: "poss" }), P); } },
+    { lvl: 3, ok: function (P) { return P.subj.length && P.verb.length && P.adj.length; },
+      make: function (P, L) { return withVerb(nounPhrase(P, L, { adj: true }), P); } },
+    { lvl: 4, ok: function (P) { return P.subj.length && P.adj.length; },
+      make: function (P, L) {
+        var np = nounPhrase(P, L, { plural: false });
+        var used = np.t.map(function (tk) { return tk.id; });
+        var adjs = P.adj.filter(function (c) { return used.indexOf(c.id) < 0; });
+        return np.t.concat([{ id: "dot-green", word: "is" }, { id: rnd(adjs.length ? adjs : P.adj).id }]);
+      } },
+    { lvl: 4, ok: function (P) { return P.verb.length; },
+      make: function (P) { return [{ id: "dot-green", word: "let's" }, { id: rnd(P.verb).id }]; } },
+    { lvl: 5, ok: function (P) { return P.subjPl.length && P.numPl.length && P.verb.length; },
+      make: function (P, L) { return withVerb(nounPhrase(P, L, { plural: true, det: "num" }), P); } },
+    { lvl: 5, ok: function (P) { return P.subj.length && P.verb.length; },
+      make: function (P, L) {
+        var a = nounPhrase(P, L), b = nounPhrase(P, L);
+        return withVerb({ t: a.t.concat([{ id: "marker-plus", word: "and" }], b.t), plural: true }, P);
+      } },
+    { lvl: 6, ok: function (P) { return P.place.length && P.subj.length && P.verb.length; },
+      make: function (P, L) { return placePhrase(P).concat(pickTemplate(P, 5).make(P, L)); } },
+    { lvl: 6, ok: function (P) { return P.place.length && P.subj.length; },
+      make: function (P, L) {
+        var np = nounPhrase(P, L, { plural: false });
+        return np.t.concat([{ id: "dot-green", word: "is" }], placePhrase(P));
+      } }
+  ];
+
+  // Mostly a structure from the top available level, sometimes an easier one.
+  function pickTemplate(P, L) {
+    var avail = TEMPLATES.filter(function (t) { return t.lvl <= L && t.ok(P); });
+    if (!avail.length) return null;
+    var top = Math.max.apply(null, avail.map(function (t) { return t.lvl; }));
+    var hi = avail.filter(function (t) { return t.lvl === top; });
+    var lo = avail.filter(function (t) { return t.lvl < top; });
+    return rnd(lo.length && !chance(0.6) ? lo : hi);
+  }
+
+  function generateSentence() {
+    var restrict = MODE === "board" && selected.size > 0;
+    var P = makePools(restrict);
+    var tpl = pickTemplate(P, genLevel);
+    if (!tpl && restrict) {
+      P = makePools(false);
+      tpl = pickTemplate(P, genLevel);
+      toast("Not enough cards in this set — using all the cards.");
+    }
+    if (!tpl) return;
+    placeSentence(tpl.make(P, genLevel));
+  }
+
+  // Lay the tokens out in one centred row, replacing the previous generated sentence.
+  function placeSentence(tokens) {
+    var GAP = 14;
+    var bw = board.clientWidth, bh = board.clientHeight;
+    var total = 0, n = 0;
+    tokens.forEach(function (tk) { total += sizeFor(BYID[tk.id]); n++; });
+    total += GAP * (n - 1);
+    var k = Math.min(1, (bw - 60) / total);
+    var x = (bw - total * k) / 2, cy = bh * 0.45;
+
+    var old = Array.prototype.slice.call(cardsLayer.querySelectorAll(".inst.gen"));
+    old.forEach(function (o) { o.remove(); });
+    var made = [];
+    tokens.forEach(function (tk) {
+      var def = BYID[tk.id], size = sizeFor(def) * k;
+      var node = spawnInstance(def, x + size / 2, cy, { size: size, word: tk.word, noHistory: true, noSelect: true });
+      node.classList.add("gen");
+      made.push(node);
+      if (tk.s) {
+        var sDef = BYID["marker-s"], ss = sizeFor(sDef) * k;
+        var sn = spawnInstance(sDef, x + size - ss * 0.05, cy - size / 2 + ss * 0.12 + ss / 2,
+          { size: ss, noHistory: true, noSelect: true });
+        sn.classList.add("gen");
+        made.push(sn);
+      }
+      x += size + GAP * k;
+    });
+    selectInstance(null);
+    pushHistory(function () {
+      made.forEach(function (m) { m.remove(); });
+      old.forEach(function (o) { cardsLayer.appendChild(o); });
+    });
+  }
 
   /* ---------- ink layer ---------- */
   var ink = document.getElementById("ink");
@@ -491,6 +770,22 @@
       oldCards.forEach(function (n) { cardsLayer.appendChild(n); });
     });
   });
+
+  var levelInput = document.getElementById("genLevel");
+  var levelVal = document.getElementById("genLevelVal");
+  var sillyBtn = document.getElementById("sillyBtn");
+  levelInput.value = genLevel; levelVal.textContent = genLevel;
+  levelInput.addEventListener("input", function () {
+    genLevel = +levelInput.value; levelVal.textContent = genLevel; LS.set("fcw_level", genLevel);
+  });
+  function refreshSilly() {
+    sillyBtn.classList.toggle("active", silly);
+    sillyBtn.setAttribute("aria-pressed", String(silly));
+  }
+  sillyBtn.addEventListener("click", function () { silly = !silly; LS.set("fcw_silly", silly); refreshSilly(); });
+  refreshSilly();
+  document.getElementById("genBtn").addEventListener("click", generateSentence);
+  document.getElementById("readBtn").addEventListener("click", readBoard);
 
   document.addEventListener("keydown", function (e) {
     if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
