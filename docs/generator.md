@@ -16,11 +16,14 @@ before, ~40% of sentences came from easier levels).
 | Level | Structure added | Example |
 |---|---|---|
 | 1 | the/a + noun + verb-s, or proper noun + verb-s | the fox runs |
-| 2 | plural (noun-s) or possessive (orange dot) | the foxes run · my fox runs |
+| 2 | plural (noun-s, verb without s) or possessive (orange dot) | the foxes run · my fox runs |
 | 3 | adjective | the black fox runs |
-| 4 | green dot: *is* + adjective, *let's* + verb | the fox is black · let's run |
+| 4 | green dot: *is* + adjective, *are* + adjective (plural subject), *let's* + verb | the fox is black · the foxes are black · let's run |
 | 5 | number, or two subjects joined by **+** (verb without s) | three foxes run · the fox + the frog run |
 | 6 | blue dot + *the* + place | in the garden the fox runs · the fox is in the garden |
+
+The "s" goes on the verb with a singular subject and on the noun for a plural;
+never on both (a plural subject takes the verb without s).
 
 *Change:* the `TEMPLATES` list (`lvl` = level, `ok` = cards needed, `make` = builder).
 
@@ -45,6 +48,41 @@ level's structure (it never replaces it, so levels stay exact).
 exclusion is in `generateSentence`; a new season/festivity card needs
 `"tag": "abstract"` and a `"prep"` in `vocab.json`.
 
+## Word options (⚙️ panel, teacher view only)
+
+The **⚙️ Options** button opens a panel with one group of checkboxes per marker:
+which words each dot can stand for, and where the generator may put an "s".
+
+| Group | Words (🎲 = the generator can use it) | Off by default |
+|---|---|---|
+| red dot | the 🎲, a 🎲 | |
+| orange dot | my, your, his, her, our, their (all 🎲) | |
+| green dot | is 🎲, let's 🎲, are 🎲 | |
+| blue dot | in 🎲, on, under, near 🎲, at 🎲, with | **near** (2026-10-09: only *in* before a place for now) |
+| s | on verbs 🎲, on nouns 🎲 | |
+
+- A word that is off is used neither by the generator nor when tapping a dot on
+  the board (the chip only cycles through the words that are on). Words with no 🎲
+  only affect the board: the generator puts no *on/under/with* before the current
+  places (school, river, garden, haunted house) — "under the river" makes no sense.
+- At least one word per group stays on.
+- Blue dot *in*/*at* also gate the time phrase: with *at* off, no "at Christmas".
+- "s" off on verbs → only plural subjects or *is/are/let's* sentences (level 1 becomes
+  impossible); off on nouns → no plurals. The "s" options affect only the generator;
+  the board still reads any "s" a student places.
+- **Saved** in the teacher's browser (`localStorage` key `fcw_opts`) and restored at
+  every visit; **sent to the class** in the share link (`#s=<cards>&o=<options>`), and
+  stored with each saved lesson set. A link without `o=` uses the teacher's saved
+  options on the teacher's own computer, the defaults elsewhere.
+- If a choice makes the chosen level impossible, the message suggests the levels that work.
+
+*Change* (all in `src/app.js`, "word options" section):
+- turn a word back on by default → remove it from `OPT_DEFAULT_OFF` (e.g. `"dot-blue:near"`);
+- add a new word → add it to the marker's `words` in `vocab.json`, **append**
+  `"<marker>:<word>"` to the end of `OPT_KEYS` (the order is the link format: never
+  insert or reorder, or old links decode wrong), add an example in `OPT_GROUPS`,
+  and to `OPT_GEN` only if a template uses it.
+
 ## Which cards are used — tags in `vocab.json`
 
 | Tag | Normal | 🤪 Silly | Why |
@@ -68,10 +106,15 @@ exclusion is in `generateSentence`; a new season/festivity card needs
 - Only the lesson's cards are used, **markers included** (red/orange/green/blue
   dots, `s`, `+`). Most sentences need the `s` marker and the red dot, so a lesson
   set should include them.
+- The ⚙️ word options come from the share link (students never see the panel).
 - If the cards can't make a sentence of the chosen level, nothing is generated
   and a message suggests the levels that work. There is no silent fallback to
   the whole deck (decided 2026-10-09).
-- The teacher view (builder) always uses the whole deck.
+- The teacher view (builder) always uses the whole deck, with the teacher's options.
+- The teacher's card selection is saved in the browser (`fcw_lastsel`) and restored
+  at every visit; **Deselect all** (tap twice) clears it. Since 2026-10-09 the
+  selection is no longer written into the teacher's address bar (a `#s=` there
+  reopened the page as the student view on reload).
 
 *Change:* `makePools` (`has` decides which cards count as available) and
 `generateSentence`.

@@ -53,9 +53,79 @@
     } catch (e) {}
     return set;
   }
-  function currentHashPayload() {
-    var m = /[#&]s=([^&]+)/.exec(location.hash);
+  function hashParam(name) {
+    var m = new RegExp("[#&]" + name + "=([^&]+)").exec(location.hash);
     return m ? decodeURIComponent(m[1]) : null;
+  }
+  function currentHashPayload() { return hashParam("s"); }
+
+  /* ---------- word options (teacher's ⚙️ panel) ---------- */
+  // Which words each dot can stand for (in the generator AND when a dot on the
+  // board is tapped) and where the generator may put an "s". Saved in this
+  // browser; sent to the class in the share link (#...&o=). See docs/generator.md.
+  // OPT_KEYS order is part of the link format: only ever APPEND new keys.
+  var OPT_KEYS = [
+    "dot-red:the", "dot-red:a",
+    "dot-orange:my", "dot-orange:your", "dot-orange:his", "dot-orange:her", "dot-orange:our", "dot-orange:their",
+    "dot-green:is", "dot-green:let's", "dot-green:are",
+    "dot-blue:in", "dot-blue:on", "dot-blue:under", "dot-blue:near", "dot-blue:at", "dot-blue:with",
+    "marker-s:verb", "marker-s:noun"
+  ];
+  var OPT_DEFAULT_OFF = ["dot-blue:near"];
+  var OPT_GROUPS = [
+    { id: "dot-red", label: "Red dot", ex: { the: "the fox", a: "a fox" } },
+    { id: "dot-orange", label: "Orange dot", ex: { my: "my cat", your: "your cat", his: "his cat",
+      her: "her cat", our: "our cat", their: "their cat" } },
+    { id: "dot-green", label: "Green dot", ex: { is: "the frog is green", "let's": "let's run",
+      are: "the frogs are green" } },
+    { id: "dot-blue", label: "Blue dot", ex: { "in": "in the garden · in winter", on: "on the desk",
+      under: "under the desk", near: "near the river", at: "at Christmas", "with": "with my cat" } },
+    { id: "marker-s", label: "s (sentence generator)", ex: { verb: "the fox run·s", noun: "the fox·es run" },
+      names: { verb: "on verbs", noun: "on nouns" } }
+  ];
+  // words the generator can use (the others only matter when tapping a dot on the board)
+  var OPT_GEN = ["dot-red:the", "dot-red:a", "dot-orange:my", "dot-orange:your", "dot-orange:his",
+    "dot-orange:her", "dot-orange:our", "dot-orange:their", "dot-green:is", "dot-green:let's",
+    "dot-green:are", "dot-blue:in", "dot-blue:near", "dot-blue:at", "marker-s:verb", "marker-s:noun"];
+
+  function optsFromMap(map) {
+    var on = new Set();
+    OPT_KEYS.forEach(function (k) {
+      var v = map && typeof map[k] === "boolean" ? map[k] : OPT_DEFAULT_OFF.indexOf(k) < 0;
+      if (v) on.add(k);
+    });
+    return on;
+  }
+  function encodeOpts(on) {
+    var bytes = new Uint8Array(Math.ceil(OPT_KEYS.length / 8));
+    OPT_KEYS.forEach(function (k, i) { if (on.has(k)) bytes[i >> 3] |= (1 << (i & 7)); });
+    return "1" + OPT_KEYS.length.toString(36) + "." + b64urlEnc(bytes);
+  }
+  function decodeOpts(payload) {            // keys newer than the link keep their default
+    var m = /^1([0-9a-z]+)\.(.*)$/.exec(payload || "");
+    if (!m) return optsFromMap(null);
+    var n = parseInt(m[1], 36), map = {};
+    try {
+      var bytes = b64urlDec(m[2]);
+      OPT_KEYS.forEach(function (k, i) { if (i < n) map[k] = !!(bytes[i >> 3] & (1 << (i & 7))); });
+    } catch (e) {}
+    return optsFromMap(map);
+  }
+  var linkOpts = hashParam("o");
+  var wordOpts = linkOpts ? decodeOpts(linkOpts) : optsFromMap(LS.get("fcw_opts", null));
+  function saveOpts() {
+    var map = {};
+    OPT_KEYS.forEach(function (k) { map[k] = wordOpts.has(k); });
+    LS.set("fcw_opts", map);
+  }
+  function optOn(id, word) { return wordOpts.has(id + ":" + word); }
+  // the words a marker can stand for right now (words without an option always count)
+  function activeWords(def) {
+    var w = (def.words || []).filter(function (x) {
+      var k = def.id + ":" + x;
+      return OPT_KEYS.indexOf(k) < 0 || wordOpts.has(k);
+    });
+    return w.length ? w : (def.words || []);
   }
 
   // Lesson set embedded in the page by the "artifact" shared-state capability.
@@ -85,12 +155,11 @@
   document.body.dataset.mode = MODE;
   var SHARED = false;   // set true once the "artifact" capability resolves
 
+  // The teacher's selection lives in this browser, not in the address bar: a
+  // "#s=" there would reopen the page as the student view on reload.
   function syncHashFromSelection() {
     if (MODE !== "builder") return;
     LS.set("fcw_lastsel", Array.from(selected));
-    var payload = encodeSelection(selected);
-    try { history.replaceState(null, "", "#s=" + payload); }
-    catch (e) { try { location.hash = "s=" + payload; } catch (e2) {} }
   }
 
   /* ---------- element helpers ---------- */
@@ -266,13 +335,13 @@
     }
     if (def.words && def.words.length > 1) {
       // dot markers stand for several words: the chip shows the current one, tap cycles
-      node.dataset.word = opts.word || def.words[0];
+      node.dataset.word = opts.word || activeWords(def)[0];
       var chip = el("div", "word-chip", node.dataset.word);
       chip.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
       chip.addEventListener("click", function (e) {
         e.stopPropagation();
-        var i = def.words.indexOf(node.dataset.word);
-        node.dataset.word = chip.textContent = def.words[(i + 1) % def.words.length];
+        var list = activeWords(def), i = list.indexOf(node.dataset.word);
+        node.dataset.word = chip.textContent = list[(i + 1) % list.length];
         speech.say(node.dataset.word);
       });
       node.appendChild(chip);
@@ -422,7 +491,7 @@
   function markerWord(node, def) { return node.dataset.word || (def.words ? def.words[0] : ""); }
   function sayCard(def) {
     if (def.kind === "s") return;
-    speech.say(def.type === "marker" ? (def.words || []).join(", ") : def.w);
+    speech.say(def.type === "marker" ? activeWords(def).join(", ") : def.w);
   }
 
   // Cards on the board in reading order (rows top->bottom, left->right),
@@ -488,7 +557,7 @@
   // Levels (a level-N sentence always contains its level's structure; the
   // features of the lower levels may appear inside it):
   //  1  the/a + noun + verb-s           2  + plurals (noun-s), possessives (orange)
-  //  3  + adjective                     4  + green dot: "is" / "let's"
+  //  3  + adjective                     4  + green dot: "is" / "are" / "let's"
   //  5  + numbers, "+" (compound subject, verb without s)
   //  6  + blue preposition + place: "In the garden the black fox + the green frog sleep"
   //  + optional time phrase at the end (TIME below), on top of the level's structure.
@@ -501,6 +570,11 @@
   var silly = !!LS.get("fcw_silly", false);
 
   function rnd(a) { return a[Math.floor(Math.random() * a.length)]; }
+  // one of these words, among those enabled in the ⚙️ options (else the first: rejected by usable)
+  function pickWord(id, among) {
+    var on = among.filter(function (w) { return optOn(id, w); });
+    return on.length ? rnd(on) : among[0];
+  }
   function chance(p) { return Math.random() < p; }
 
   function makePools(restrict) {
@@ -538,15 +612,15 @@
       : L >= 2 && chance(0.3) ? "poss" : "art");
     var t = [];
     if (det === "num") t.push({ id: rnd(plural ? P.numPl : P.one).id });
-    else if (det === "poss") t.push({ id: "dot-orange", word: rnd(BYID["dot-orange"].words) });
-    else t.push({ id: "dot-red", word: plural ? "the" : rnd(["the", "a"]) });
+    else if (det === "poss") t.push({ id: "dot-orange", word: rnd(activeWords(BYID["dot-orange"])) });
+    else t.push({ id: "dot-red", word: plural ? "the" : pickWord("dot-red", ["the", "a"]) });
     if (P.adj.length && (f.adj || (L >= 3 && chance(0.4)))) t.push({ id: rnd(P.adj).id });
     t.push({ id: noun.id, s: plural });
     return { t: t, plural: plural };
   }
   function withVerb(np, P) { return np.t.concat([{ id: rnd(P.verb).id, s: !np.plural }]); }
   function placePhrase(P) {
-    return [{ id: "dot-blue", word: rnd(["in", "near"]) }, { id: "dot-red", word: "the" }, { id: rnd(P.place).id }];
+    return [{ id: "dot-blue", word: pickWord("dot-blue", ["in", "near"]) }, { id: "dot-red", word: "the" }, { id: rnd(P.place).id }];
   }
 
   var TEMPLATES = [
@@ -567,6 +641,11 @@
         var adjs = P.adj.filter(function (c) { return used.indexOf(c.id) < 0; });
         return np.t.concat([{ id: "dot-green", word: "is" }, { id: rnd(adjs.length ? adjs : P.adj).id }]);
       } },
+    { lvl: 4, ok: function (P) { return P.subjPl.length && P.adj.length; },
+      make: function (P, L) {
+        var np = nounPhrase(P, L, { plural: true });
+        return np.t.concat([{ id: "dot-green", word: "are" }, { id: rnd(P.adj).id }]);
+      } },
     { lvl: 4, ok: function (P) { return P.verb.length; },
       make: function (P) { return [{ id: "dot-green", word: "let's" }, { id: rnd(P.verb).id }]; } },
     { lvl: 5, ok: function (P) { return P.subjPl.length && P.numPl.length && P.verb.length; },
@@ -586,12 +665,13 @@
   ];
 
   function timePhrase(P, L) {
-    var opts = [];
-    if (L >= TIME.everyFrom) P.every.forEach(function (c) { opts.push([{ id: c.id }]); });
+    var choices = [];
+    if (L >= TIME.everyFrom) P.every.forEach(function (c) { choices.push([{ id: c.id }]); });
     if (L >= TIME.prepFrom && P.has("dot-blue")) P.season.forEach(function (c) {
-      opts.push([{ id: "dot-blue", word: c.prep }, { id: c.id }]);
+      if (!optOn("dot-blue", c.prep)) return;
+      choices.push([{ id: "dot-blue", word: c.prep }, { id: c.id }]);
     });
-    return opts.length ? rnd(opts) : null;
+    return choices.length ? rnd(choices) : null;
   }
 
   // Any structure up to level L (used for the sentence inside a level-6 place phrase).
@@ -600,9 +680,15 @@
     return avail.length ? rnd(avail) : null;
   }
 
-  // Every card in the sentence, the "s" marker included, must be in the pools.
+  // Every card in the sentence, the "s" marker included, must be in the pools,
+  // and every dot word and "s" must be enabled in the ⚙️ options.
   function usable(tokens, P) {
-    return tokens.every(function (tk) { return P.has(tk.id) && (!tk.s || P.has("marker-s")); });
+    return tokens.every(function (tk) {
+      if (!P.has(tk.id)) return false;
+      if (tk.word && OPT_KEYS.indexOf(tk.id + ":" + tk.word) >= 0 && !optOn(tk.id, tk.word)) return false;
+      if (!tk.s) return true;
+      return P.has("marker-s") && optOn("marker-s", BYID[tk.id].cat === "verbs" ? "verb" : "noun");
+    });
   }
 
   // A sentence of exactly level L, or null if these cards can't make one.
@@ -623,8 +709,8 @@
     if (!tokens) {
       var ok = [1, 2, 3, 4, 5, 6].filter(function (L) { return L !== genLevel && sentenceAtLevel(P, L); });
       toast(ok.length
-        ? "No level " + genLevel + " sentence with these cards — try level " + ok.join(", ") + "."
-        : "These cards can't make a sentence.", 3200);
+        ? "No level " + genLevel + " sentence with these cards and ⚙️ options — try level " + ok.join(", ") + "."
+        : "These cards and ⚙️ options can't make a sentence.", 3200);
       return;
     }
     var lets = tokens.some(function (tk) { return tk.word === "let's"; });
@@ -763,16 +849,33 @@
   var penColor = LS.get("fcw_color", "#e02f2f");
   var penSize = LS.get("fcw_size", 4);
 
+  // Tools sit in a drop-down; every session starts on Move (the tool is not saved).
+  var toolMenu = document.querySelector(".tool-menu");
+  var toolMenuBtn = document.getElementById("toolMenuBtn");
+  function openToolMenu(open) {
+    toolMenu.classList.toggle("open", open);
+    toolMenuBtn.setAttribute("aria-expanded", String(open));
+  }
   function setTool(t) {
     document.body.dataset.tool = t;
-    LS.set("fcw_tool", t);
     document.querySelectorAll("button.tool").forEach(function (b) {
-      b.classList.toggle("active", b.dataset.tool === t);
+      var on = b.dataset.tool === t;
+      b.classList.toggle("active", on);
+      if (on) {
+        document.getElementById("toolMenuIco").textContent = b.querySelector(".ico").textContent;
+        document.getElementById("toolMenuTxt").textContent = b.textContent.replace(b.querySelector(".ico").textContent, "");
+      }
     });
     if (t !== "move") selectInstance(null);
   }
   document.querySelectorAll("button.tool").forEach(function (b) {
-    b.addEventListener("click", function () { setTool(b.dataset.tool); });
+    b.addEventListener("click", function () { setTool(b.dataset.tool); openToolMenu(false); });
+  });
+  toolMenuBtn.addEventListener("click", function (e) {
+    e.stopPropagation(); openToolMenu(!toolMenu.classList.contains("open"));
+  });
+  document.addEventListener("pointerdown", function (e) {
+    if (!toolMenu.contains(e.target)) openToolMenu(false);
   });
   document.querySelectorAll(".swatch").forEach(function (sw) {
     if (sw.dataset.color === penColor) sw.classList.add("active");
@@ -834,7 +937,7 @@
     } else if (e.key === "p") setTool("pen");
     else if (e.key === "h") setTool("highlighter");
     else if (e.key === "e") setTool("eraser");
-    else if (e.key === "v" || e.key === "Escape") setTool("move");
+    else if (e.key === "v" || e.key === "Escape") { setTool("move"); openToolMenu(false); }
   });
 
   /* ---------- flag ---------- */
@@ -856,7 +959,7 @@
   var savedListEl = document.getElementById("savedList");
 
   function shareUrl() {
-    return location.origin + location.pathname + "#s=" + encodeSelection(selected);
+    return location.origin + location.pathname + "#s=" + encodeSelection(selected) + "&o=" + encodeOpts(wordOpts);
   }
   var shareWarn = document.getElementById("shareWarn");
   function openShare() {
@@ -881,10 +984,11 @@
     sets.forEach(function (s, i) {
       var li = el("li");
       var a = el("a", null, s.name + "  (" + s.count + ")");
-      a.href = location.origin + location.pathname + "#s=" + s.payload;
+      a.href = location.origin + location.pathname + "#s=" + s.payload + (s.opts ? "&o=" + s.opts : "");
       var load = el("button", null, "Load");
       load.addEventListener("click", function () {
         selected = decodeSelection(s.payload);
+        if (s.opts) { wordOpts = decodeOpts(s.opts); saveOpts(); }
         buildPalette(); syncHashFromSelection();
         urlInput.value = shareUrl();
         try { qrBox.innerHTML = window.QR.svg(shareUrl(), { ecc: "M", border: 2 }); } catch (e) {}
@@ -919,10 +1023,69 @@
     var name = (setNameInput && setNameInput.value || "").trim();
     if (!name) { if (setNameInput) setNameInput.focus(); return; }
     var sets = LS.get("fcw_sets", []);
-    sets.unshift({ name: name, payload: encodeSelection(selected), count: selected.size, ts: Date.now() });
+    sets.unshift({ name: name, payload: encodeSelection(selected), opts: encodeOpts(wordOpts), count: selected.size, ts: Date.now() });
     LS.set("fcw_sets", sets.slice(0, 30));
     if (setNameInput) setNameInput.value = "";
     renderSaved();
+  });
+
+  /* ---------- word options dialog (teacher only) ---------- */
+  var optsOverlay = document.getElementById("optsOverlay");
+  var optsBody = document.getElementById("optsBody");
+  function renderOpts() {
+    optsBody.innerHTML = "";
+    OPT_GROUPS.forEach(function (g) {
+      var box = el("div", "opt-group");
+      var h = el("h3");
+      h.appendChild(markerEl(BYID[g.id]));
+      h.appendChild(document.createTextNode(g.label));
+      box.appendChild(h);
+      OPT_KEYS.forEach(function (k) {
+        if (k.indexOf(g.id + ":") !== 0) return;
+        var word = k.slice(g.id.length + 1);
+        var lab = el("label");
+        var cb = el("input"); cb.type = "checkbox"; cb.checked = wordOpts.has(k);
+        cb.addEventListener("change", function () {
+          if (cb.checked) wordOpts.add(k); else wordOpts.delete(k);
+          var left = OPT_KEYS.filter(function (x) { return x.indexOf(g.id + ":") === 0 && wordOpts.has(x); });
+          if (!left.length) { wordOpts.add(k); cb.checked = true; toast("Keep at least one."); }
+          saveOpts();
+        });
+        lab.appendChild(cb);
+        lab.appendChild(el("b", null, (g.names && g.names[word]) || word));
+        lab.appendChild(el("span", "ex", g.ex[word] || ""));
+        if (OPT_GEN.indexOf(k) >= 0) lab.appendChild(el("span", "gen", "🎲"));
+        box.appendChild(lab);
+      });
+      optsBody.appendChild(box);
+    });
+  }
+  document.getElementById("optsBtn").addEventListener("click", function () {
+    renderOpts(); optsOverlay.classList.add("open");
+  });
+  document.getElementById("optsDone").addEventListener("click", function () { optsOverlay.classList.remove("open"); });
+  document.getElementById("optsReset").addEventListener("click", function () {
+    wordOpts = optsFromMap(null); saveOpts(); renderOpts();
+  });
+  optsOverlay.addEventListener("click", function (e) { if (e.target === optsOverlay) optsOverlay.classList.remove("open"); });
+
+  /* ---------- deselect all (two taps: the first one arms the button) ---------- */
+  var clearSelBtn = document.getElementById("clearSelBtn");
+  clearSelBtn.addEventListener("click", function () {
+    if (!selected.size) return;
+    if (!clearSelBtn.classList.contains("armed")) {
+      clearSelBtn.classList.add("armed"); clearSelBtn.textContent = "Tap again";
+      clearTimeout(clearSelBtn._t);
+      clearSelBtn._t = setTimeout(function () {
+        clearSelBtn.classList.remove("armed"); clearSelBtn.textContent = "Deselect all";
+      }, 3000);
+      return;
+    }
+    clearTimeout(clearSelBtn._t);
+    clearSelBtn.classList.remove("armed"); clearSelBtn.textContent = "Deselect all";
+    selected.clear();
+    paletteScroll.querySelectorAll(".pcard.on").forEach(function (c) { c.classList.remove("on"); });
+    refreshCounts(); syncHashFromSelection();
   });
 
   /* ---------- board-mode banner ---------- */
@@ -1022,7 +1185,7 @@
 
   /* ---------- init ---------- */
   buildPalette();
-  setTool(LS.get("fcw_tool", "move"));
+  setTool("move");
   var savedColor = document.querySelector('.swatch[data-color="' + penColor + '"]');
   if (savedColor) { document.querySelectorAll(".swatch").forEach(function (o) { o.classList.toggle("active", o === savedColor); }); }
   resizeInk();

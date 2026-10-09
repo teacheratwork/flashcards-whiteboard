@@ -3,10 +3,16 @@
 
 <header class="toolbar">
   <span class="brand">Sentence&nbsp;Cards</span>
-  <button class="tool" data-tool="move"><span class="ico">✋</span><span class="txt">Move</span></button>
-  <button class="tool" data-tool="pen"><span class="ico">✏️</span><span class="txt">Pen</span></button>
-  <button class="tool" data-tool="highlighter"><span class="ico">🖍️</span><span class="txt">Marker</span></button>
-  <button class="tool" data-tool="eraser"><span class="ico">🧽</span><span class="txt">Eraser</span></button>
+  <span class="tool-menu">
+    <button id="toolMenuBtn" class="tool-current" aria-haspopup="true" aria-expanded="false" title="Tool (v move, p pen, h marker, e eraser)">
+      <span class="ico" id="toolMenuIco">✋</span><span class="txt" id="toolMenuTxt">Move</span><span class="caret">▾</span></button>
+    <span id="toolMenuList" class="tool-list" role="menu">
+      <button class="tool" data-tool="move" role="menuitem"><span class="ico">✋</span><span>Move</span></button>
+      <button class="tool" data-tool="pen" role="menuitem"><span class="ico">✏️</span><span>Pen</span></button>
+      <button class="tool" data-tool="highlighter" role="menuitem"><span class="ico">🖍️</span><span>Marker</span></button>
+      <button class="tool" data-tool="eraser" role="menuitem"><span class="ico">🧽</span><span>Eraser</span></button>
+    </span>
+  </span>
   <span class="pen-opts">
     <button class="swatch" data-color="#e02f2f" style="background:#e02f2f" title="Red"></button>
     <button class="swatch" data-color="#1e6fd9" style="background:#1e6fd9" title="Blue"></button>
@@ -23,6 +29,7 @@
     <label class="level" title="Grammar level of the sentence">Level
       <input id="genLevel" type="range" min="1" max="6" step="1" value="1"><b id="genLevelVal">1</b></label>
     <button id="sillyBtn" class="toggle" title="Silly sentences: any noun, any verb" aria-pressed="false">🤪 <span class="txt">Silly</span></button>
+    <button id="optsBtn" class="teacher-only" title="Which words the dots and the s can stand for">⚙️ <span class="txt">Options</span></button>
   </span>
   <button id="readBtn" title="Read the board aloud">🔊 <span class="txt">Read</span></button>
   <span class="spacer"></span>
@@ -32,7 +39,8 @@
 
 <main>
   <aside class="palette">
-    <div class="palette-head">Cards <span id="paletteHeadCount"></span></div>
+    <div class="palette-head">Cards <span id="paletteHeadCount"></span>
+      <button id="clearSelBtn" class="teacher-only head-btn" title="Deselect all the cards">Deselect all</button></div>
     <div id="paletteScroll" class="palette-scroll"></div>
   </aside>
 
@@ -81,6 +89,16 @@
       </div>
       <ul id="savedList"></ul>
     </div>
+  </div>
+</div>
+
+<div id="optsOverlay" class="overlay">
+  <div class="dialog opts-dialog">
+    <h2>Word options</h2>
+    <p class="hint">What each dot can stand for — in the sentence generator and when you tap a dot on the board.
+      🎲 = used by the generator. Saved on this computer and sent to the class with the share link.</p>
+    <div id="optsBody"></div>
+    <div class="row"><button id="optsReset">Reset</button><button id="optsDone" class="primary">Done</button></div>
   </div>
 </div>
 

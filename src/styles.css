@@ -52,6 +52,7 @@ header.toolbar {
 #shareBtn:hover { filter: brightness(1.06); }
 body[data-mode="board"] #shareBtn { display: none; }
 body[data-mode="builder"] .mode-note { display: none; }
+body[data-mode="board"] .teacher-only { display: none; }
 
 button.tool, .toolbar button {
   appearance: none; border: 1px solid var(--line); background: var(--panel);
@@ -64,6 +65,21 @@ button.tool.active { background: var(--accent); border-color: var(--accent); col
 button.tool .ico { font-size: 17px; line-height: 1; }
 
 .pen-opts { display: inline-flex; align-items: center; gap: 4px; padding-left: 4px; }
+/* colour + width only for the drawing tools */
+body:not([data-tool="pen"]):not([data-tool="highlighter"]) .pen-opts { display: none; }
+
+/* tool drop-down */
+.tool-menu { position: relative; display: inline-flex; }
+.toolbar button.tool-current { background: var(--accent); border-color: var(--accent); color: #fff; }
+.toolbar button.tool-current:hover { filter: brightness(1.06); background: var(--accent); }
+.tool-current .caret { font-size: 11px; opacity: .85; }
+.tool-list {
+  display: none; position: absolute; top: calc(100% + 4px); left: 0; z-index: 40;
+  flex-direction: column; gap: 4px; padding: 6px; min-width: 100%;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow);
+}
+.tool-menu.open .tool-list { display: flex; }
+.tool-list button.tool { justify-content: flex-start; width: 100%; }
 .swatch {
   width: 26px; height: 26px; border-radius: 50%; border: 2px solid #fff;
   outline: 1px solid var(--line); cursor: pointer; padding: 0;
@@ -259,6 +275,24 @@ body.english-only section.board { box-shadow: inset 0 0 0 4px #C8102E; }
 .saved-list li a { flex: 1; color: var(--accent); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .saved-list li button { padding: 3px 7px; font-size: 12px; }
 .empty-hint { color: var(--muted); font-size: 12px; }
+
+/* ---------- word options dialog ---------- */
+.palette-head { flex-wrap: wrap; row-gap: 6px; }
+.palette-head .head-btn {
+  flex: 1 0 100%; border: 1px solid var(--line); background: #fff; border-radius: 6px;
+  padding: 2px 7px; font-size: 11px; font-weight: 700; color: var(--muted); cursor: pointer;
+  text-transform: none; letter-spacing: 0;
+}
+.palette-head .head-btn.armed { background: var(--danger); border-color: var(--danger); color: #fff; }
+.opts-dialog { max-width: 460px; text-align: left; max-height: calc(100vh - 32px); overflow-y: auto; }
+.opts-dialog h2, .opts-dialog p.hint { text-align: center; }
+.opt-group { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-bottom: 8px; }
+.opt-group h3 { margin: 0 0 4px; font-size: 13px; display: flex; align-items: center; gap: 7px; }
+.opt-group h3 .marker { position: relative; width: 18px; height: 18px; font-size: 18px; flex: 0 0 18px; }
+.opt-group label { display: flex; align-items: baseline; gap: 7px; padding: 3px 0; font-size: 14px; cursor: pointer; }
+.opt-group label b { min-width: 52px; }
+.opt-group label .ex { color: var(--muted); font-size: 12px; }
+.opt-group label .gen { margin-left: auto; font-size: 12px; }
 
 /* ---------- shared-state (Artifact) mode ---------- */
 .toast {

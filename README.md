@@ -9,11 +9,14 @@ on their own laptops/tablets by opening a shared link (each works independently)
 - **Builder mode** (open the page with no `#s=` in the URL): the left palette shows
   every card grouped by category. Click cards to add them to the lesson set, then
   **Share to class** → show the QR (tablets) or copy the link into your class channel
-  (laptops). Saved sets are remembered on that computer.
+  (laptops). Saved sets are remembered on that computer, and so is the current
+  selection (it comes back at the next visit). **Deselect all** (tap twice) clears it.
 - **Board mode** (open a shared link): the palette shows only the teacher's chosen
   cards, flat. Drag them onto the board.
 - Cards never run out — dragging one from the palette leaves it there.
-- **Pen / Marker / Eraser** in the toolbar. The eraser only removes ink, not cards.
+- **Tool menu** (first button, drop-down): Move / Pen / Marker / Eraser. Every session
+  starts on Move; colours and line width appear only with Pen or Marker (the eraser
+  uses 4× the last line width). The eraser only removes ink, not cards.
   `Undo` (Ctrl+Z), `Clear ink`, `Clear board`. Keys: `v` move, `p` pen, `h`
   highlighter, `e` eraser.
 - **Union Jack** in the top-right corner: click to raise/lower it. Raised = English only.
@@ -26,7 +29,9 @@ on their own laptops/tablets by opening a shared link (each works independently)
   inside it). **🤪 Silly** allows any noun as the subject and any verb. With a shared
   lesson set, only the set's cards are used — markers (dots, `s`, `+`) included; if
   they can't make a sentence of that level, a message suggests the levels that work.
-  Sometimes a time phrase is added at the end (`every day` from level 3, `in winter` /
+  **⚙️ Options** (teacher only) chooses which words each dot can stand for — in the
+  generator and when tapping a dot — and where the generator may put an `s`; saved in
+  the browser and sent with the share link. Sometimes a time phrase is added at the end (`every day` from level 3, `in winter` /
   `at Christmas` from level 6). All the rules and why: [docs/generator.md](docs/generator.md).
 - **🔊 Read** speaks the board (rows top→bottom, left→right; an `s` on a card makes it
   plural / 3rd person). A selected card shows 🔊 to hear just that card; in board mode
