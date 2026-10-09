@@ -77,7 +77,7 @@ def build_catalog() -> list[dict]:
         if not v:
             missing.append(c["id"])
             continue
-        for k in ("w", "tag", "pl", "nopl", "words"):
+        for k in ("w", "tag", "pl", "nopl", "prep", "words"):
             if k in v:
                 c[k] = v[k]
     if missing:

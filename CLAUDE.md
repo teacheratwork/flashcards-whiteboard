@@ -26,6 +26,7 @@ published as a Claude Artifact and also openable from `file://`.
 ```
 tools/extract_cards.py   PDF decks -> per-card WebP in assets/cards/<category>/
 tools/build.py           inline catalog + assets into a template -> dist/index.html
+docs/generator.md        sentence generator rules + design choices (keep in sync with app.js)
 src/                     app source (template, css, js)
 assets/vocab.json        hand-edited English word + grammar tag per card (speech, generator)
 catalog.json             category / id / file / type (picture|marker) + vocab fields

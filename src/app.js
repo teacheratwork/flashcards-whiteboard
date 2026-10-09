@@ -485,12 +485,19 @@
   }
 
   /* ---------- sentence generator ---------- */
-  // Levels (each level also uses the structures of the lower ones):
+  // Levels (a level-N sentence always contains its level's structure; the
+  // features of the lower levels may appear inside it):
   //  1  the/a + noun + verb-s           2  + plurals (noun-s), possessives (orange)
   //  3  + adjective                     4  + green dot: "is" / "let's"
   //  5  + numbers, "+" (compound subject, verb without s)
   //  6  + blue preposition + place: "In the garden the black fox + the green frog sleep"
+  //  + optional time phrase at the end (TIME below), on top of the level's structure.
+  // All these rules and the reasons behind them: docs/generator.md
   var genLevel = LS.get("fcw_level", 1);
+
+  // Optional time phrase: "every day" from everyFrom, "in winter" / "at Christmas"
+  // (blue dot + abstract noun with a "prep" in vocab.json) from prepFrom.
+  var TIME = { chance: 0.33, everyFrom: 3, prepFrom: 6 };
   var silly = !!LS.get("fcw_silly", false);
 
   function rnd(a) { return a[Math.floor(Math.random() * a.length)]; }
@@ -505,12 +512,16 @@
       return silly ? c.tag !== "abstract" : c.tag === "animate";
     });
     return {
+      // markers count too: in the student view only the lesson's markers are usable
+      has: function (id) { return !restrict || selected.has(id); },
       subj: subj,
       subjPl: subj.filter(function (c) { return !c.nopl; }),
       proper: of("proper-nouns"),
       verb: of("verbs", function (c) { return silly || c.tag === "intr"; }),
       adj: of("adjectives", function (c) { return silly || c.tag !== "weather"; }),
       place: of("common-nouns", function (c) { return c.tag === "place"; }),
+      every: of("time"),
+      season: of("common-nouns", function (c) { return c.tag === "abstract" && c.prep; }),
       one: of("numbers", function (c) { return c.id === "numbers-01"; }),
       numPl: of("numbers", function (c) { return c.id !== "numbers-01"; })
     };
@@ -566,7 +577,7 @@
         return withVerb({ t: a.t.concat([{ id: "marker-plus", word: "and" }], b.t), plural: true }, P);
       } },
     { lvl: 6, ok: function (P) { return P.place.length && P.subj.length && P.verb.length; },
-      make: function (P, L) { return placePhrase(P).concat(pickTemplate(P, 5).make(P, L)); } },
+      make: function (P, L) { return placePhrase(P).concat(pickUpTo(P, 5).make(P, L)); } },
     { lvl: 6, ok: function (P) { return P.place.length && P.subj.length; },
       make: function (P, L) {
         var np = nounPhrase(P, L, { plural: false });
@@ -574,27 +585,54 @@
       } }
   ];
 
-  // Mostly a structure from the top available level, sometimes an easier one.
-  function pickTemplate(P, L) {
+  function timePhrase(P, L) {
+    var opts = [];
+    if (L >= TIME.everyFrom) P.every.forEach(function (c) { opts.push([{ id: c.id }]); });
+    if (L >= TIME.prepFrom && P.has("dot-blue")) P.season.forEach(function (c) {
+      opts.push([{ id: "dot-blue", word: c.prep }, { id: c.id }]);
+    });
+    return opts.length ? rnd(opts) : null;
+  }
+
+  // Any structure up to level L (used for the sentence inside a level-6 place phrase).
+  function pickUpTo(P, L) {
     var avail = TEMPLATES.filter(function (t) { return t.lvl <= L && t.ok(P); });
-    if (!avail.length) return null;
-    var top = Math.max.apply(null, avail.map(function (t) { return t.lvl; }));
-    var hi = avail.filter(function (t) { return t.lvl === top; });
-    var lo = avail.filter(function (t) { return t.lvl < top; });
-    return rnd(lo.length && !chance(0.6) ? lo : hi);
+    return avail.length ? rnd(avail) : null;
+  }
+
+  // Every card in the sentence, the "s" marker included, must be in the pools.
+  function usable(tokens, P) {
+    return tokens.every(function (tk) { return P.has(tk.id) && (!tk.s || P.has("marker-s")); });
+  }
+
+  // A sentence of exactly level L, or null if these cards can't make one.
+  // Random choices may pick a marker the lesson lacks, so retry a few times.
+  function sentenceAtLevel(P, L) {
+    var tpls = TEMPLATES.filter(function (t) { return t.lvl === L && t.ok(P); });
+    for (var i = 0; i < 80 && tpls.length; i++) {
+      var tokens = rnd(tpls).make(P, L);
+      if (usable(tokens, P)) return tokens;
+    }
+    return null;
   }
 
   function generateSentence() {
     var restrict = MODE === "board" && selected.size > 0;
     var P = makePools(restrict);
-    var tpl = pickTemplate(P, genLevel);
-    if (!tpl && restrict) {
-      P = makePools(false);
-      tpl = pickTemplate(P, genLevel);
-      toast("Not enough cards in this set — using all the cards.");
+    var tokens = sentenceAtLevel(P, genLevel);
+    if (!tokens) {
+      var ok = [1, 2, 3, 4, 5, 6].filter(function (L) { return L !== genLevel && sentenceAtLevel(P, L); });
+      toast(ok.length
+        ? "No level " + genLevel + " sentence with these cards — try level " + ok.join(", ") + "."
+        : "These cards can't make a sentence.", 3200);
+      return;
     }
-    if (!tpl) return;
-    placeSentence(tpl.make(P, genLevel));
+    var lets = tokens.some(function (tk) { return tk.word === "let's"; });
+    if (!lets && chance(TIME.chance)) {
+      var tp = timePhrase(P, genLevel);
+      if (tp) tokens = tokens.concat(tp);
+    }
+    placeSentence(tokens);
   }
 
   // Lay the tokens out in one centred row, replacing the previous generated sentence.

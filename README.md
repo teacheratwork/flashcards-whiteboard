@@ -22,8 +22,12 @@ on their own laptops/tablets by opening a shared link (each works independently)
   generated one; hand-placed cards and ink stay). **Level 1–6** sets the grammar:
   1 `the/a + noun + verb-s` · 2 + plurals, possessives · 3 + adjective ·
   4 + green dot (`is`, `let's`) · 5 + numbers, `+` · 6 + blue preposition + place.
-  Each level mixes in the easier structures too. **🤪 Silly** allows any noun as the
-  subject and any verb. With a shared lesson set, only the set's cards are used.
+  Every sentence has exactly the chosen level's structure (easier features may appear
+  inside it). **🤪 Silly** allows any noun as the subject and any verb. With a shared
+  lesson set, only the set's cards are used — markers (dots, `s`, `+`) included; if
+  they can't make a sentence of that level, a message suggests the levels that work.
+  Sometimes a time phrase is added at the end (`every day` from level 3, `in winter` /
+  `at Christmas` from level 6). All the rules and why: [docs/generator.md](docs/generator.md).
 - **🔊 Read** speaks the board (rows top→bottom, left→right; an `s` on a card makes it
   plural / 3rd person). A selected card shows 🔊 to hear just that card; in board mode
   tapping a palette card speaks it. A selected dot shows its word under it (the → a,

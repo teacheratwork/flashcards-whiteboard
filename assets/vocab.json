@@ -7,6 +7,7 @@
     "        adjectives -> any | weather (not used to describe a subject)",
     "pl    : plural form when it is not just word+s/es (e.g. fish, elves)",
     "nopl  : true = uncountable, never pluralised",
+    "prep  : abstract nouns only -- blue-dot word before it in a time phrase (in winter, at Christmas); see docs/generator.md",
     "check : true = the picture was ambiguous, the teacher should confirm the word",
     "words : marker cards only -- the words the dot can stand for; tapping a placed dot cycles through them"
   ],
@@ -19,9 +20,9 @@
 
   "common-nouns-01": {"w": "hat", "tag": "thing"},
   "common-nouns-02": {"w": "witch", "tag": "animate"},
-  "common-nouns-03": {"w": "winter", "tag": "abstract", "check": true},
+  "common-nouns-03": {"w": "winter", "tag": "abstract", "check": true, "prep": "in"},
   "common-nouns-04": {"w": "teacher", "tag": "animate"},
-  "common-nouns-05": {"w": "spring", "tag": "abstract", "check": true},
+  "common-nouns-05": {"w": "spring", "tag": "abstract", "check": true, "prep": "in"},
   "common-nouns-06": {"w": "snowman", "tag": "animate", "pl": "snowmen"},
   "common-nouns-07": {"w": "snowball", "tag": "thing"},
   "common-nouns-08": {"w": "skunk", "tag": "animate"},
@@ -58,7 +59,7 @@
   "common-nouns-39": {"w": "desk", "tag": "thing"},
   "common-nouns-40": {"w": "cup", "tag": "thing", "check": true},
   "common-nouns-41": {"w": "scarecrow", "tag": "animate", "check": true},
-  "common-nouns-42": {"w": "Christmas", "tag": "abstract", "check": true},
+  "common-nouns-42": {"w": "Christmas", "tag": "abstract", "check": true, "prep": "at"},
   "common-nouns-43": {"w": "chick", "tag": "animate"},
   "common-nouns-44": {"w": "cat", "tag": "animate"},
   "common-nouns-45": {"w": "rabbit", "tag": "animate"},

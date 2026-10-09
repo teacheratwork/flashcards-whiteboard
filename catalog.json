@@ -53,7 +53,8 @@
     "cat": "common-nouns",
     "type": "pic",
     "w": "winter",
-    "tag": "abstract"
+    "tag": "abstract",
+    "prep": "in"
   },
   {
     "id": "common-nouns-04",
@@ -67,7 +68,8 @@
     "cat": "common-nouns",
     "type": "pic",
     "w": "spring",
-    "tag": "abstract"
+    "tag": "abstract",
+    "prep": "in"
   },
   {
     "id": "common-nouns-06",
@@ -333,7 +335,8 @@
     "cat": "common-nouns",
     "type": "pic",
     "w": "Christmas",
-    "tag": "abstract"
+    "tag": "abstract",
+    "prep": "at"
   },
   {
     "id": "common-nouns-43",
