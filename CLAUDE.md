@@ -9,6 +9,8 @@ Conversation with the user stays Italian.
 
 ## What it is
 
+Product name: **BB1 flashcards** (year 1); later years BB2, BB3… flashcards. Never "Sentence Cards".
+
 A single self-contained `index.html` (vanilla HTML/CSS/JS, zero external requests),
 published as a Claude Artifact and also openable from `file://`.
 

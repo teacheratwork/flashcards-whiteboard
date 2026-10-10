@@ -1,4 +1,4 @@
-# Sentence Cards — classroom flashcard whiteboard
+# BB1 flashcards — classroom flashcard whiteboard
 
 A single self-contained web page for building English sentences by dragging grammar
 flashcards. Used by the teacher on the interactive whiteboard; students follow along
