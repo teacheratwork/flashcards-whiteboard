@@ -10,3 +10,9 @@ tools/_debug/
 # OS
 Thumbs.db
 .DS_Store
+
+# FTP upload folder (built by tools/build.py; config.php holds the setup code)
+upload/
+
+# Local test accounts of tools/serve_local.py
+local-data/

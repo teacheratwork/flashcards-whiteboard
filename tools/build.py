@@ -6,6 +6,9 @@ assets/markers.json and assets/vocab.json (words + grammar tags), then writes:
   dist/artifact.html  -- body-only page for publishing as a Claude Artifact
   dist/index.html     -- same, wrapped as a standalone file you can open locally
   catalog.json        -- the card catalogue, for reference
+  upload/flashcards/  -- the login-protected PHP version (server/ + the app split
+                         into inc/shell.php and inc/cards.php), to upload by FTP.
+                         Not committed: upload/ is git-ignored.
 
 Re-run after re-slicing cards or editing anything in src/.
 """
@@ -13,12 +16,17 @@ from __future__ import annotations
 
 import base64
 import json
+import secrets
+import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 SRC = ROOT / "src"
 CARDS = ROOT / "assets" / "cards"
 DIST = ROOT / "dist"
+SERVER = ROOT / "server"
+UPLOAD = ROOT / "upload" / "flashcards"
+SHELL_END = "BBF_SHELL_END"
 
 CATS = [
     {"key": "proper-nouns", "label": "Proper nouns"},
@@ -85,6 +93,42 @@ def build_catalog() -> list[dict]:
     return catalog
 
 
+def standalone(body: str) -> str:
+    return (
+        "<!doctype html>\n<html lang=\"en\">\n<head>\n"
+        "<meta charset=\"utf-8\">\n"
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, "
+        "maximum-scale=1, user-scalable=no\">\n</head>\n<body data-tool=\"move\">\n"
+        + body + "\n</body>\n</html>\n"
+    )
+
+
+def php_nowdoc(text: str, label: str) -> str:
+    """A PHP file that returns `text`, unreadable when requested directly."""
+    if f"\n{label}" in text:
+        raise SystemExit(f"text contains the nowdoc end marker {label}")
+    return f"<?php defined('BBF') or exit;\nreturn <<<'{label}'\n{text}\n{label};\n"
+
+
+def build_server(shell: str, catalog: list[dict]) -> None:
+    """server/ + the app split in shell (no cards) and cards -> upload/flashcards/.
+    config.php is created once (random setup code) and then kept as it is."""
+    if "/*__DATA__*/" not in shell:
+        raise SystemExit("template lost its /*__DATA__*/ placeholder")
+    config = UPLOAD / "config.php"
+    kept = config.read_text(encoding="utf-8") if config.exists() else None
+    if UPLOAD.exists():
+        shutil.rmtree(UPLOAD)
+    shutil.copytree(SERVER, UPLOAD, ignore=shutil.ignore_patterns("config.sample.php"))
+    (UPLOAD / "inc" / "shell.php").write_text(php_nowdoc(shell, SHELL_END), encoding="utf-8")
+    cards = json.dumps({"cats": CATS, "catalog": catalog}, separators=(",", ":"))
+    (UPLOAD / "inc" / "cards.php").write_text(php_nowdoc(cards, "BBF_CARDS_END"), encoding="utf-8")
+    if kept is None:
+        kept = (SERVER / "config.sample.php").read_text(encoding="utf-8").replace(
+            "__SETUP_CODE__", secrets.token_urlsafe(9))
+    config.write_text(kept, encoding="utf-8")
+
+
 def main() -> int:
     catalog = build_catalog()
     (ROOT / "catalog.json").write_text(
@@ -101,29 +145,24 @@ def main() -> int:
         "window.CATALOG=" + json.dumps(catalog, separators=(",", ":")) + ";"
     )
 
-    body = (template
-            .replace("/*__STYLES__*/", styles)
-            .replace("/*__DATA__*/", data_js)
-            .replace("/*__QR__*/", qrjs)
-            .replace("/*__APP__*/", appjs))
+    shell_body = (template
+                  .replace("/*__STYLES__*/", styles)
+                  .replace("/*__QR__*/", qrjs)
+                  .replace("/*__APP__*/", appjs))
+    body = shell_body.replace("/*__DATA__*/", data_js)
 
     DIST.mkdir(exist_ok=True)
     (DIST / "artifact.html").write_text(body, encoding="utf-8")
+    (DIST / "index.html").write_text(standalone(body), encoding="utf-8")
 
-    standalone = (
-        "<!doctype html>\n<html lang=\"en\">\n<head>\n"
-        "<meta charset=\"utf-8\">\n"
-        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, "
-        "maximum-scale=1, user-scalable=no\">\n</head>\n<body data-tool=\"move\">\n"
-        + body + "\n</body>\n</html>\n"
-    )
-    (DIST / "index.html").write_text(standalone, encoding="utf-8")
+    build_server(standalone(shell_body), catalog)
 
     pics = sum(1 for c in catalog if c["type"] == "pic")
     kb = (DIST / "index.html").stat().st_size / 1024
     print(f"  catalog: {pics} picture cards + {len(MARKERS)} markers = {len(catalog)} total")
     print(f"  dist/index.html    {kb:8.0f} KB")
     print(f"  dist/artifact.html {(DIST / 'artifact.html').stat().st_size / 1024:8.0f} KB")
+    print(f"  upload/flashcards/ (PHP, for FTP)")
     return 0
 
 

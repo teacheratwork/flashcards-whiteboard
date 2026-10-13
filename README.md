@@ -38,6 +38,37 @@ on their own laptops/tablets by opening a shared link (each works independently)
   tapping a palette card speaks it. A selected dot shows its word under it (the → a,
   my → your…): tap the word to change it. British voice when the device has one.
 
+## Login-protected version (PHP, uploaded by FTP)
+
+`python tools/build.py` also writes `upload/flashcards/`: copy that folder by FTP into
+any PHP (>= 7.4) site, e.g. `https://example.org/flashcards/`. Nothing else to set up:
+no database, no changes to the rest of the site.
+
+- **First visit**: asks for the setup code (in `upload/flashcards/config.php`, created
+  once with a random value and then kept) and creates the first administrator.
+- **`admin.php`** (administrators): create accounts (random or chosen password, shown
+  once with a ready-to-send message), change password, edit name/role/expiry date,
+  disable/enable, delete; last login, number of logins, student opens; monthly log.
+- **`account.php`**: a teacher changes their password or logs out of other devices.
+- **Teachers** get the full app. *Share to class* asks the server for a signed link
+  `?t=<uid>~<expiry>~<cards>~<options>~<signature>` that works without an account
+  until midnight (`student_link_hours` in `config.php` to change it) and serves only
+  the lesson's cards. Disabling a teacher also stops their student links.
+- **Segnala** (teachers): a form for bugs and change requests. The server saves it
+  (shown on `admin.php`, «Segnalazioni») and mails it to `feedback_to` in `config.php`,
+  Reply-To = the teacher. Saving comes first: PHP `mail()` on shared hosting may be
+  filtered or disabled. 20 reports per teacher per day (`feedback_per_day`).
+- Login = signed cookie limited to the folder, 30 days (`login_days`); changing the
+  password logs out every other device. 5 wrong passwords lock the account 10 minutes.
+- Data lives in `data/` on the server (`users.php`, `secret.php`, `log-YYYY-MM.php`):
+  JSON behind `<?php exit; ?>`, so they show nothing even where `.htaccess` is ignored.
+  **When re-uploading, never use an FTP "mirror/sync with deletion"**: it would delete
+  `data/` and every account. `data_dir` in `config.php` can point outside the web root.
+
+Local test: `python tools/serve_local.py` (needs PHP: `PHP` env variable, `php` on the
+PATH, or `~/tools/php-8.3/php.exe`) → http://127.0.0.1:8080/. Test accounts go to
+`local-data/` (git-ignored), never into `upload/`; `--reset` starts from scratch.
+
 ## Words and grammar tags
 
 `assets/vocab.json` holds the English word for every card and the tags the generator
@@ -71,5 +102,7 @@ in `tools/extract_cards.py` and to `CATS` in `tools/build.py`, re-run both scrip
 | `assets/vocab.json` | hand-edited words + grammar tags per card |
 | `src/qr.js` | dependency-free QR generator (byte mode) |
 | `tools/extract_cards.py` | PDF → per-card WebP slicer |
-| `tools/build.py` | inlines catalog + assets → `dist/` |
+| `tools/build.py` | inlines catalog + assets → `dist/`, PHP site → `upload/flashcards/` |
+| `server/` | PHP host: `index.php` (login, app, student links), `admin.php`, `account.php`, `inc/core.php` |
+| `tools/serve_local.py` | local PHP test server |
 | `catalog.json` | generated card list (defines the URL bitmask order) |

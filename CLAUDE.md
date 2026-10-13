@@ -34,6 +34,9 @@ assets/vocab.json        hand-edited English word + grammar tag per card (speech
 catalog.json             category / id / file / type (picture|marker) + vocab fields
 assets/cards/            generated card images
 dist/index.html          final self-contained artifact (this is what gets published)
+server/                  PHP host: login, accounts (admin.php), signed student links
+tools/serve_local.py     run the PHP version locally (http://127.0.0.1:8080, test data in local-data/)
+upload/flashcards/       built PHP site to upload by FTP (git-ignored: config.php has the setup code)
 ```
 
 ## Source decks
@@ -51,6 +54,20 @@ account `teacheratwork`: repo `teacheratwork/flashcards-whiteboard` (public), re
 URL: `https://teacheratwork.github.io/flashcards-whiteboard/`.
 To update: edit `src/` or `assets/vocab.json`, run `python tools/build.py`, commit
 (including `dist/`), push to both remotes.
+
+### Login-protected version (from 2026-10-13, not yet online)
+
+For Open Minds: `upload/flashcards/` (built by `tools/build.py`) goes by FTP into a
+folder of the publisher's own site. Plain PHP >= 7.4, no database, no WordPress
+integration. Accounts are managed by the publisher on `admin.php` (email + password,
+random or chosen, optional expiry, enable/disable, log). Teachers' «Segnala» reports are
+saved there and mailed to `feedback_to` (the user's address; untested until on a real host). Teachers log in; the share
+button asks the server for a signed student link (`?t=`) valid until midnight that
+serves only the lesson's cards, no account needed. Data in `data/` on the server
+(JSON behind `<?php exit; ?>`): never sync-delete it when re-uploading. Details and
+the student-link format: README "Login-protected version". Tested locally with PHP
+7.4 lint + 8.3 (portable zip in `~/tools/php-8.3/`). The GitHub repo/Pages are still
+public: the user decides with the publisher.
 
 ## Git
 

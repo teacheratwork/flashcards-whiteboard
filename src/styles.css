@@ -44,6 +44,20 @@ header.toolbar {
 }
 .toolbar .spacer { flex: 1; }
 .mode-note { font-size: 12px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.account { display: flex; gap: 10px; align-items: center; font-size: 13px; white-space: nowrap; }
+.account .who { color: var(--muted); font-weight: 700; }
+.account a { color: var(--accent); font-weight: 600; text-decoration: none; }
+.account a:hover { text-decoration: underline; }
+#shareExpiry:empty { display: none; }
+.fb-dialog { max-width: 480px; text-align: left; }
+.fb-dialog h2, .fb-dialog p.hint { text-align: center; }
+.fb-type { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-bottom: 10px; font-size: 14px; font-weight: 600; }
+.fb-type label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+.fb-dialog textarea {
+  width: 100%; box-sizing: border-box; border: 1px solid var(--line); border-radius: 8px;
+  padding: 9px; font: inherit; font-size: 14px; resize: vertical;
+}
+.fb-dialog p.fb-msg { margin: 8px 0; min-height: 1em; color: #b3261e; }
 #shareBtn {
   appearance: none; border: 1px solid var(--accent); background: var(--accent); color: #fff;
   border-radius: 9px; min-height: 40px; padding: 0 14px; font-size: 14px; font-weight: 700;

@@ -2,6 +2,10 @@
    Expects globals injected at build time:
      window.CATALOG : [{id, cat, type:'pic', src} | {id, cat, type:'marker', kind, color, ring}]
      window.CATS    : [{key, label}]
+     window.SERVER  : only on the PHP host (server/): {mode:'builder', api, csrf,
+                      user, links} for a logged-in teacher, or {mode:'board', sel,
+                      opts, exp} for a student link (CATALOG then holds only the
+                      lesson's cards). Absent in the standalone / Artifact builds.
 */
 (function () {
   "use strict";
@@ -13,6 +17,7 @@
 
   var CATALOG = window.CATALOG || [];
   var CATS = window.CATS || [];
+  var SRV = window.SERVER || null;
   var IDS = CATALOG.map(function (c) { return c.id; });
   var BYID = {};
   CATALOG.forEach(function (c) { BYID[c.id] = c; });
@@ -111,7 +116,7 @@
     } catch (e) {}
     return optsFromMap(map);
   }
-  var linkOpts = hashParam("o");
+  var linkOpts = SRV && SRV.mode === "board" ? SRV.opts : hashParam("o");
   var wordOpts = linkOpts ? decodeOpts(linkOpts) : optsFromMap(LS.get("fcw_opts", null));
   function saveOpts() {
     var map = {};
@@ -142,7 +147,10 @@
   var hashPayload = currentHashPayload();
 
   var MODE, selected;
-  if (hashPayload) {                       // opened via a shared link (hash)
+  if (SRV && SRV.mode === "board") {       // student link signed by the PHP host
+    MODE = "board";
+    selected = new Set(SRV.sel || []);
+  } else if (hashPayload) {                       // opened via a shared link (hash)
     MODE = "board";
     selected = decodeSelection(hashPayload);
   } else if (embeddedSet && !isTeacher) {  // a lesson has been pushed to the class
@@ -962,16 +970,50 @@
     return location.origin + location.pathname + "#s=" + encodeSelection(selected) + "&o=" + encodeOpts(wordOpts);
   }
   var shareWarn = document.getElementById("shareWarn");
+  var shareExpiry = document.getElementById("shareExpiry");
+  function showShareUrl(url) {
+    urlInput.value = url;
+    try { qrBox.innerHTML = window.QR.svg(url, { ecc: "M", border: 2 }); }
+    catch (e) { qrBox.textContent = "QR error"; }
+  }
+  // On the PHP host the students' link is signed by the server (it works
+  // without an account, until it expires): ask for one per card set + options.
+  var serverLink = { key: null, url: "", exp: 0 };
+  function refreshShare() {
+    if (selected.size === 0) return;
+    if (!SRV) { showShareUrl(shareUrl()); return; }
+    var s = encodeSelection(selected), o = encodeOpts(wordOpts), key = s + "&" + o;
+    if (serverLink.key === key && serverLink.exp > Date.now() / 1000 + 900) { showShareUrl(serverLink.url); return; }
+    urlInput.value = "Making the link…";
+    qrBox.innerHTML = "";
+    fetch(SRV.api, {
+      method: "POST", credentials: "same-origin",
+      headers: { "Content-Type": "application/json", "X-CSRF": SRV.csrf },
+      body: JSON.stringify({ s: s, o: o })
+    }).then(function (r) {
+      if (r.status === 401) throw new Error("login");
+      if (!r.ok) throw new Error("http");
+      return r.json();
+    }).then(function (j) {
+      serverLink = { key: key, url: location.origin + location.pathname + "?t=" + j.token, exp: j.exp };
+      if (shareExpiry) {
+        shareExpiry.textContent = "The students' link works until " + new Date(j.exp * 1000).toLocaleString("en-GB",
+          { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) + ".";
+      }
+      if (key === encodeSelection(selected) + "&" + encodeOpts(wordOpts)) showShareUrl(serverLink.url);
+    }).catch(function (err) {
+      urlInput.value = "";
+      qrBox.textContent = err.message === "login"
+        ? "You have been logged out: reload the page and log in again."
+        : "Couldn't make the link. Check the connection and try again.";
+    });
+  }
   function openShare() {
     var empty = selected.size === 0;
     if (shareWarn) shareWarn.style.display = empty ? "block" : "none";
     qrBox.style.display = empty ? "none" : "";
-    var url = shareUrl();
-    urlInput.value = url;
-    if (!empty) {
-      try { qrBox.innerHTML = window.QR.svg(url, { ecc: "M", border: 2 }); }
-      catch (e) { qrBox.textContent = "QR error"; }
-    }
+    urlInput.value = "";
+    refreshShare();
     renderSaved();
     overlay.classList.add("open");
   }
@@ -990,8 +1032,7 @@
         selected = decodeSelection(s.payload);
         if (s.opts) { wordOpts = decodeOpts(s.opts); saveOpts(); }
         buildPalette(); syncHashFromSelection();
-        urlInput.value = shareUrl();
-        try { qrBox.innerHTML = window.QR.svg(shareUrl(), { ecc: "M", border: 2 }); } catch (e) {}
+        refreshShare();
       });
       var del = el("button", null, "×");
       del.addEventListener("click", function () {
@@ -1015,7 +1056,8 @@
     var b = this; setTimeout(function () { b.textContent = "Copy link"; }, 1600);
   });
   document.getElementById("openBoardBtn").addEventListener("click", function () {
-    window.open(shareUrl(), "_blank");
+    var url = SRV ? urlInput.value : shareUrl();
+    if (/^https?:/.test(url)) window.open(url, "_blank");
   });
   var setNameInput = document.getElementById("setName");
   document.getElementById("saveSetBtn").addEventListener("click", function () {
@@ -1181,6 +1223,83 @@
     });
     refreshToggle();
     document.body.appendChild(toggle);
+  }
+
+  /* ---------- account links (PHP host, teacher) ---------- */
+  if (SRV && SRV.mode === "builder" && SRV.links) {
+    var acct = el("span", "account");
+    var who = el("span", "who", SRV.user ? SRV.user.name : "");
+    acct.appendChild(who);
+    var links = [["Account", SRV.links.account]];
+    if (SRV.user && SRV.user.admin) links.push(["Users", SRV.links.admin]);
+    links.push(["Log out", SRV.links.logout]);
+    links.forEach(function (l) { var a = el("a", null, l[0]); a.href = l[1]; acct.appendChild(a); });
+    var bar = document.querySelector("header.toolbar");
+    bar.insertBefore(acct, document.getElementById("shareBtn"));
+    if (SRV.feedback) {
+      var fbBtn = el("a", "feedback-btn", "Segnala");
+      fbBtn.href = "#";
+      fbBtn.title = "Segnala un problema o chiedi una modifica";
+      fbBtn.addEventListener("click", function (e) { e.preventDefault(); openFeedback(); });
+      acct.insertBefore(fbBtn, acct.firstChild.nextSibling);
+    }
+  }
+
+  /* ---------- feedback dialog (PHP host, teacher; Italian: it is for the teachers) ---------- */
+  var fbOverlay = null;
+  function openFeedback() {
+    if (!fbOverlay) {
+      fbOverlay = el("div", "overlay");
+      fbOverlay.id = "fbOverlay";
+      fbOverlay.innerHTML =
+        '<div class="dialog fb-dialog"><h2>Segnala un problema o chiedi una modifica</h2>' +
+        '<p class="hint">Arriva a chi sviluppa la lavagna. Il messaggio include il tuo nome e la tua email, ' +
+        'così può risponderti, e alcuni dati tecnici (browser, schermo, carte selezionate).</p>' +
+        '<div class="fb-type"><label><input type="radio" name="fbType" value="bug" checked> Qualcosa non funziona</label>' +
+        '<label><input type="radio" name="fbType" value="change"> Vorrei una modifica</label></div>' +
+        '<div class="fb-text"><textarea id="fbText" rows="6" maxlength="5000" placeholder="Che cosa stavi facendo, che cosa è successo, che cosa ti aspettavi…"></textarea></div>' +
+        '<p id="fbMsg" class="hint fb-msg"></p>' +
+        '<div class="row"><button id="fbCancel">Annulla</button><button id="fbSend" class="primary">Invia</button></div></div>';
+      document.body.appendChild(fbOverlay);
+      fbOverlay.addEventListener("click", function (e) { if (e.target === fbOverlay) fbOverlay.classList.remove("open"); });
+      document.getElementById("fbCancel").addEventListener("click", function () { fbOverlay.classList.remove("open"); });
+      document.getElementById("fbSend").addEventListener("click", sendFeedback);
+    }
+    document.getElementById("fbMsg").textContent = "";
+    document.getElementById("fbSend").disabled = false;
+    fbOverlay.classList.add("open");
+    setTimeout(function () { document.getElementById("fbText").focus(); }, 50);
+  }
+  function sendFeedback() {
+    var text = document.getElementById("fbText").value.trim();
+    var msg = document.getElementById("fbMsg");
+    if (!text) { msg.textContent = "Scrivi che cosa è successo o che cosa vorresti."; return; }
+    var type = (document.querySelector('input[name="fbType"]:checked') || {}).value || "bug";
+    var send = document.getElementById("fbSend");
+    send.disabled = true;
+    msg.textContent = "Invio…";
+    fetch(SRV.feedback, {
+      method: "POST", credentials: "same-origin",
+      headers: { "Content-Type": "application/json", "X-CSRF": SRV.csrf },
+      body: JSON.stringify({ type: type, text: text, ctx: {
+        ua: navigator.userAgent, screen: screen.width + "x" + screen.height + " (finestra " + innerWidth + "x" + innerHeight + ")",
+        mode: MODE, cards: selected.size + " selezionate", level: String(genLevel) } })
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) { return { status: r.status, j: j }; });
+    }).then(function (res) {
+      if (res.status === 200) {
+        document.getElementById("fbText").value = "";
+        fbOverlay.classList.remove("open");
+        toast("Grazie! Segnalazione inviata.", 2600);
+        return;
+      }
+      send.disabled = false;
+      msg.textContent = res.status === 401 ? "Sei uscito: ricarica la pagina e accedi di nuovo (copia prima il testo)."
+        : (res.j && res.j.error) || "Invio non riuscito: riprova tra poco.";
+    }).catch(function () {
+      send.disabled = false;
+      msg.textContent = "Invio non riuscito: controlla la connessione e riprova.";
+    });
   }
 
   /* ---------- init ---------- */
