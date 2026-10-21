@@ -597,7 +597,8 @@
       // markers count too: in the student view only the lesson's markers are usable
       has: function (id) { return !restrict || selected.has(id); },
       subj: subj,
-      subjPl: subj.filter(function (c) { return !c.nopl; }),
+      // the plural is shown with the "s" card: only nouns whose plural ends in -s (not fish, snowmen)
+      subjPl: subj.filter(function (c) { return !c.nopl && (!c.pl || /s$/i.test(c.pl)); }),
       proper: of("proper-nouns"),
       verb: of("verbs", function (c) { return silly || c.tag === "intr"; }),
       adj: of("adjectives", function (c) { return silly || c.tag !== "weather"; }),
@@ -664,7 +665,11 @@
         return withVerb({ t: a.t.concat([{ id: "marker-plus", word: "and" }], b.t), plural: true }, P);
       } },
     { lvl: 6, ok: function (P) { return P.place.length && P.subj.length && P.verb.length; },
-      make: function (P, L) { return placePhrase(P).concat(pickUpTo(P, 5).make(P, L)); } },
+      make: function (P, L) {
+        var t = pickUpTo(P, 5).make(P, L);
+        // "let's hop in the garden", not "in the garden let's hop"
+        return t[0].word === "let's" ? t.concat(placePhrase(P)) : placePhrase(P).concat(t);
+      } },
     { lvl: 6, ok: function (P) { return P.place.length && P.subj.length; },
       make: function (P, L) {
         var np = nounPhrase(P, L, { plural: false });

@@ -20,7 +20,11 @@ before, ~40% of sentences came from easier levels).
 | 3 | adjective | the black fox runs |
 | 4 | green dot: *is* + adjective, *are* + adjective (plural subject), *let's* + verb | the fox is black · the foxes are black · let's run |
 | 5 | number, or two subjects joined by **+** (verb without s) | three foxes run · the fox + the frog run |
-| 6 | blue dot + *the* + place | in the garden the fox runs · the fox is in the garden |
+| 6 | blue dot + *the* + place | in the garden the fox runs · the fox is in the garden · let's hop in the garden |
+
+At level 6 the place goes first, except with *let's*: "let's hop in the garden", not
+"in the garden let's hop" (decided 2026-10-21: correct but unnatural, and on the board
+the green dot before a verb was easily misread as *is*).
 
 The "s" goes on the verb with a singular subject and on the noun for a plural;
 never on both (a plural subject takes the verb without s).
@@ -99,6 +103,11 @@ which words each dot can stand for, and where the generator may put an "s".
 | numbers | level 5 | level 5 | *one* only with a singular noun |
 
 `nopl: true` = never pluralised (hot chocolate, fairy lights); `pl` = irregular plural.
+The generator shows a plural with the `s` card, so it only pluralises nouns whose plural
+ends in -s: *elves*, *scarves*, *octopuses* yes; *fish* and *snowmen* never (decided
+2026-10-21: "the fish·s swim" taught a wrong plural). They stay usable as singular
+subjects, and the board still reads them correctly if the teacher adds an `s` by hand.
+*Change:* the `subjPl` filter in `makePools`.
 *Change:* re-tag a card in `vocab.json` (e.g. *doll* → `animate` to use it as a subject).
 
 ## Student view (shared lesson set)

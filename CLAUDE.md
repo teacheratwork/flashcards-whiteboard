@@ -69,6 +69,12 @@ the student-link format: README "Login-protected version". Tested locally with P
 7.4 lint + 8.3 (portable zip in `~/tools/php-8.3/`). The GitHub repo/Pages are still
 public: the user decides with the publisher.
 
+## Changelog for Open Minds
+
+`CHANGELOG.md` lists every user-visible change made after the zip emailed to the
+publisher on 2026-10-17. Add a line under «Not yet sent» with each such change (same
+commit), so the user can tell her what changed before sending a new version.
+
 ## Git
 
 Two remotes: `origin` = `forgejo:samuele/flashcards-whiteboard.git` (backup, private)
