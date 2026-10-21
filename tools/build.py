@@ -5,6 +5,7 @@ assets/markers.json and assets/vocab.json (words + grammar tags), then writes:
 
   dist/artifact.html  -- body-only page for publishing as a Claude Artifact
   dist/index.html     -- same, wrapped as a standalone file you can open locally
+  dist/changelog.html -- CHANGELOG.md as a plain web page (GitHub Pages)
   catalog.json        -- the card catalogue, for reference
   upload/flashcards/  -- the login-protected PHP version (server/ + the app split
                          into inc/shell.php and inc/cards.php), to upload by FTP.
@@ -15,7 +16,9 @@ Re-run after re-slicing cards or editing anything in src/.
 from __future__ import annotations
 
 import base64
+import html
 import json
+import re
 import secrets
 import shutil
 from datetime import datetime
@@ -130,6 +133,71 @@ def build_server(shell: str, catalog: list[dict]) -> None:
     config.write_text(kept, encoding="utf-8")
 
 
+def inline_md(text: str) -> str:
+    text = html.escape(text, quote=False)
+    text = re.sub(r"`([^`]+)`", r"<code>\1</code>", text)
+    text = re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", text)
+    return re.sub(r"\*([^*]+)\*", r"<i>\1</i>", text)
+
+
+def changelog_page() -> str:
+    """CHANGELOG.md -> a plain web page (published on GitHub Pages as changelog.html).
+    Handles only what the changelog uses: # / ## headings, paragraphs, "- " items
+    with indented continuation lines, `code`, *italic*, **bold**."""
+    out, para, item = [], [], None
+
+    def flush():
+        nonlocal para, item
+        if item is not None:
+            out.append(f"<li>{inline_md(' '.join(item))}</li>")
+            item = None
+        if para:
+            out.append(f"<p>{inline_md(' '.join(para))}</p>")
+            para = []
+
+    in_list = False
+    for line in (ROOT / "CHANGELOG.md").read_text(encoding="utf-8").splitlines():
+        s = line.strip()
+        if line.startswith("- "):
+            flush()
+            if not in_list:
+                out.append("<ul>")
+                in_list = True
+            item = [s[2:]]
+            continue
+        if item is not None and line.startswith("  ") and s:
+            item.append(s)
+            continue
+        if s and not line.startswith("#") and item is None and not in_list:
+            para.append(s)        # paragraph text spanning several lines
+            continue
+        flush()
+        if in_list:
+            out.append("</ul>")
+            in_list = False
+        if line.startswith("## "):
+            out.append(f"<h2>{inline_md(s[3:])}</h2>")
+        elif line.startswith("# "):
+            out.append(f"<h1>{inline_md(s[2:])}</h1>")
+        elif s:
+            para.append(s)
+    flush()
+    if in_list:
+        out.append("</ul>")
+    return (
+        "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
+        "<title>BB1 flashcards — changelog</title>\n<style>\n"
+        "body{font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;"
+        "max-width:760px;margin:0 auto;padding:24px 16px 48px;color:#1f2328;background:#fff}\n"
+        "h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:28px 0 6px;"
+        "padding-bottom:4px;border-bottom:1px solid #d8dee4}\n"
+        "ul{padding-left:22px}li{margin:6px 0}code{background:#f2f4f6;padding:1px 4px;"
+        "border-radius:4px;font-size:90%}p{color:#57606a}\n"
+        "</style>\n</head>\n<body>\n" + "\n".join(out) + "\n</body>\n</html>\n"
+    )
+
+
 def main() -> int:
     catalog = build_catalog()
     (ROOT / "catalog.json").write_text(
@@ -163,6 +231,7 @@ def main() -> int:
     DIST.mkdir(exist_ok=True)
     (DIST / "artifact.html").write_text(body, encoding="utf-8")
     (DIST / "index.html").write_text(standalone(body), encoding="utf-8")
+    (DIST / "changelog.html").write_text(changelog_page(), encoding="utf-8")
 
     build_server(standalone(shell_body), catalog)
 

@@ -83,6 +83,11 @@ lives in `VERSION`; `tools/build.py` shows it in the bottom-right corner of the 
   typo, a small visual fix);
 - when a zip goes to Open Minds, write «sent to Open Minds on <date>» on its heading.
 
+The publisher reads it as a plain page: `tools/build.py` turns it into
+`dist/changelog.html`, published at
+`https://teacheratwork.github.io/flashcards-whiteboard/changelog.html` (link given to
+her). So after editing CHANGELOG.md, rebuild and push to `github` too.
+
 ## Git
 
 Two remotes: `origin` = `forgejo:samuele/flashcards-whiteboard.git` (backup, private)
