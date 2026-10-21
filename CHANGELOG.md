@@ -3,11 +3,11 @@
 Changes since the version sent to Open Minds. The version is shown in the
 bottom-right corner of the board.
 
-## 1.2 — 2026-10-21 (public page; not yet sent to Open Minds)
+## 1.2 — 2026-10-21
 
 - Version label in the bottom-right corner of the board.
 
-## 1.1 — 2026-10-21 (public page, no version label yet; not yet sent to Open Minds)
+## 1.1 — 2026-10-21
 
 - Sentence generator: irregular plurals without -s (*fish*, *snowmen*) are no longer
   put in the plural, so the generator never shows «fish + s». They still appear as
