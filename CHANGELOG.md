@@ -11,9 +11,12 @@ Comparing that label with this file tells which version a board is running.
 **Rules.**
 - Every change a teacher or a pupil would notice gets a line under the version being
   prepared (the top one).
-- Before publishing a version that is already online with new changes, bump `VERSION`
-  (1.1 → 1.2) and open a new heading. Fixes made the same day before publishing can stay
-  in the same version.
+- Before publishing new changes on top of a version already online, bump `VERSION` and
+  open a new heading. Fixes made before publishing can stay in the same version.
+  - normal change (new feature, generator rule, anything a teacher should be told
+    about): next tenth, 1.2 → 1.3;
+  - minimal change (a word, a typo, a small visual fix): next hundredth, 1.2 → 1.21 →
+    1.22; the next normal change then goes to 1.3 (decided 2026-10-21).
 - When a zip goes to Open Minds, write «sent to Open Minds on <date>» on its heading.
 
 ## 1.2 — 2026-10-21 (public page; not yet sent to Open Minds)

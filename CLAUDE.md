@@ -75,7 +75,8 @@ public: the user decides with the publisher.
 emailed to the publisher on 2026-10-17. Add a line for each such change (same commit),
 so the user can tell her what changed before sending a new version. The version number
 lives in `VERSION`; `tools/build.py` shows it in the bottom-right corner of the board
-(with the build date). Bump it before publishing new changes — rules at the top of
+(with the build date). Bump it before publishing new changes: tenths for normal
+changes (1.2 → 1.3), hundredths for minimal ones (1.2 → 1.21) — rules at the top of
 `CHANGELOG.md`.
 
 ## Git
