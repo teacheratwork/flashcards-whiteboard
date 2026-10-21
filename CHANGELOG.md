@@ -28,6 +28,11 @@ Comparing that label with this file tells which version a board is running.
 - Sentence generator: irregular plurals without -s (*fish*, *snowmen*) are no longer
   put in the plural, so the generator never shows «fish + s». They still appear as
   singular subjects.
+  *Why not generate «the fish run» instead* (no `s` on the noun nor on the verb): on the
+  board it would look like an agreement mistake — a noun that seems singular with a
+  verb without -s. Without the teacher explaining it, a first-year pupil would read it as
+  an error. The teacher can still show the invariable plural by hand: the board reads
+  it as «fish».
 - Sentence generator, level 6: with *let's* the place now goes after the verb
   («let's hop in the garden» instead of «in the garden let's hop»).
 
