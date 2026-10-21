@@ -75,9 +75,13 @@ public: the user decides with the publisher.
 emailed to the publisher on 2026-10-17. Add a line for each such change (same commit),
 so the user can tell her what changed before sending a new version. The version number
 lives in `VERSION`; `tools/build.py` shows it in the bottom-right corner of the board
-(with the build date). Bump it before publishing new changes: tenths for normal
-changes (1.2 → 1.3), hundredths for minimal ones (1.2 → 1.21) — rules at the top of
-`CHANGELOG.md`.
+(with the build date). Rules (decided 2026-10-21):
+- each change a teacher or pupil would notice gets a line under the top version;
+- before publishing changes on top of a version already online, bump `VERSION` and open
+  a new heading: tenths for normal changes (1.2 → 1.3: features, generator rules,
+  anything to tell the publisher), hundredths for minimal ones (1.2 → 1.21: a word, a
+  typo, a small visual fix);
+- when a zip goes to Open Minds, write «sent to Open Minds on <date>» on its heading.
 
 ## Git
 
