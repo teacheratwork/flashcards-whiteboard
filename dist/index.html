@@ -249,6 +249,13 @@ body[data-tool="eraser"] section.board { cursor: cell; }
   color: var(--muted); text-align: right; width: 100%; letter-spacing: .05em;
 }
 
+/* version label: tells at a glance whether the board is up to date */
+.version {
+  position: absolute; right: 10px; bottom: 6px; z-index: 3;
+  font-size: 11px; color: var(--muted); opacity: .7;
+  pointer-events: none; user-select: none;
+}
+
 /* English-only banner */
 .english-banner {
   position: absolute; top: 0; left: 0; right: 0; z-index: 4;
@@ -403,6 +410,7 @@ body.english-only section.board { box-shadow: inset 0 0 0 4px #C8102E; }
     <div class="english-banner">English only</div>
     <div id="cardsLayer" class="cards-layer"></div>
     <canvas id="ink" class="ink"></canvas>
+    <div class="version" title="BB1 flashcards — version 1.2, built 21/10/2026 21:17">v1.2 · 21/10/2026</div>
     <div id="flagWrap" class="flag-wrap" title="Raise / lower the flag">
       <div class="flag-pole"></div>
       <div class="flag" id="flagImg">

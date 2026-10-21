@@ -71,9 +71,12 @@ public: the user decides with the publisher.
 
 ## Changelog for Open Minds
 
-`CHANGELOG.md` lists every user-visible change made after the zip emailed to the
-publisher on 2026-10-17. Add a line under «Not yet sent» with each such change (same
-commit), so the user can tell her what changed before sending a new version.
+`CHANGELOG.md` lists every user-visible change by version, starting from 1.0 = the zip
+emailed to the publisher on 2026-10-17. Add a line for each such change (same commit),
+so the user can tell her what changed before sending a new version. The version number
+lives in `VERSION`; `tools/build.py` shows it in the bottom-right corner of the board
+(with the build date). Bump it before publishing new changes — rules at the top of
+`CHANGELOG.md`.
 
 ## Git
 

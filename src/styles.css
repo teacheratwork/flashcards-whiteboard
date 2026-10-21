@@ -241,6 +241,13 @@ body[data-tool="eraser"] section.board { cursor: cell; }
   color: var(--muted); text-align: right; width: 100%; letter-spacing: .05em;
 }
 
+/* version label: tells at a glance whether the board is up to date */
+.version {
+  position: absolute; right: 10px; bottom: 6px; z-index: 3;
+  font-size: 11px; color: var(--muted); opacity: .7;
+  pointer-events: none; user-select: none;
+}
+
 /* English-only banner */
 .english-banner {
   position: absolute; top: 0; left: 0; right: 0; z-index: 4;

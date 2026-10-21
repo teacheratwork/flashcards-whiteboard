@@ -18,6 +18,7 @@ import base64
 import json
 import secrets
 import shutil
+from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
@@ -145,7 +146,15 @@ def main() -> int:
         "window.CATALOG=" + json.dumps(catalog, separators=(",", ":")) + ";"
     )
 
+    # version shown next to the product name (VERSION file; see CHANGELOG.md)
+    version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    now = datetime.now()
+    built = now.strftime("%d/%m/%Y %H:%M")
+
     shell_body = (template
+                  .replace("__VERSION__", version)
+                  .replace("__BUILD_DAY__", now.strftime("%d/%m/%Y"))
+                  .replace("__BUILD__", built)
                   .replace("/*__STYLES__*/", styles)
                   .replace("/*__QR__*/", qrjs)
                   .replace("/*__APP__*/", appjs))
@@ -159,6 +168,7 @@ def main() -> int:
 
     pics = sum(1 for c in catalog if c["type"] == "pic")
     kb = (DIST / "index.html").stat().st_size / 1024
+    print(f"  version {version}, built {built}")
     print(f"  catalog: {pics} picture cards + {len(MARKERS)} markers = {len(catalog)} total")
     print(f"  dist/index.html    {kb:8.0f} KB")
     print(f"  dist/artifact.html {(DIST / 'artifact.html').stat().st_size / 1024:8.0f} KB")
